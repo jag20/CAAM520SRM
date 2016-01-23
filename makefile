@@ -13,4 +13,4 @@ clean :
 
 .PHONY: all test clean
 
-include $(PETSC_DIR)/lib/petsc/conf/petscvariables
+include $(PETSC_DIR)/$(PETSC_ARCH)/lib/petsc/conf/petscvariables
