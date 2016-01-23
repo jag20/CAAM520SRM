@@ -37,8 +37,6 @@ class GMakefileGenerator(ConfigReader):
     with file(os.path.join(self.archDir, 'gmakefile'), 'w') as f:
       self.framework.outputMakeMacro(f, 'PYTHON', sys.executable)
 
-      self.framework.outputMakeMacro(f, 'PETSC_DIR',  os.environ['PETSC_DIR'])
-      self.framework.outputMakeMacro(f, 'PETSC_ARCH', os.environ['PETSC_ARCH'])
       f.write('include ${PETSC_DIR}/lib/petsc/conf/variables\n\n')
 
       f.write('include ../base.mk')
