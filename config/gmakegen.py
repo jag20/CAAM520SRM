@@ -11,7 +11,7 @@ class ConfigReader(script.Script):
     import RDict
     import os
 
-    rootdir = os.getenv('SRMG_DIR', '.')
+    rootdir = os.path.abspath(os.getenv('SRMG_DIR', '.'))
     self.archDir = os.path.join(rootdir, os.environ['PETSC_ARCH'])
     if not os.path.isdir(self.archDir):
       os.mkdir(self.archDir)
@@ -38,6 +38,9 @@ class GMakefileGenerator(ConfigReader):
       self.framework.outputMakeMacro(f, 'PYTHON', sys.executable)
 
       f.write('include ${PETSC_DIR}/lib/petsc/conf/variables\n\n')
+
+      f.write('SRMG_INCLUDE = -I'+os.path.join(os.path.dirname(self.archDir), 'include')+'\n')
+      f.write('CFLAGS += ${SRMG_INCLUDE}\n')
 
       f.write('include ../base.mk')
     return
