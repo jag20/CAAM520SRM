@@ -24,9 +24,9 @@
     
     Consider $\bigtriangledown \epsilon \bigtriangleup u = f$, discretization by the spectral method and solved using multigrid.
     
-    Discretizing the domain by the Spectral Method and solving using multigrid yields a solution with a fourier representation that is accurate up to k coefficients. To get higher accuracy, one can refine the grid further. 
+    Discretizing the domain by the Spectral Method and solving using multigrid yields a solution with a fourier representation that is arbitrarily accurate up to k coefficients (when using, e.g. gmres to find unknowns). To get higher accuracy, one can refine the grid further. Using an initial guess for some of the unknowns from the coarse grid, low frequency errors are still small, but high frequency errors are possibly high. 
     
-    Now consider the buffer zone introduced by segmental refinement, which can be represented as a new grid with two boundary conditions encoding the error by this buffer zone. The boundary will thus be functions with fourier coefficients of k or greater since the coarser grid was accurate up to k coefficients. 
+    Now consider the buffer zone introduced by segmental refinement, which can be represented as a new grid with two boundary conditions encoding the error by this buffer zone. The boundary will thus be functions with fourier coefficients of k or greater since the coarser grid was ~accurate up to k coefficients. 
     
     We must demonstrate that the solution to this grid with boundary values of frequency k will decay to discretization error by the time it leaves the buffer zone. On this finer grid, then, we will have error introduced by discretization of frequency 2k or higher, combined with the error that is introduced by the buffer zone and decays to discretization error. Overall, this function will still be accurate up to coefficients of 2k.
     

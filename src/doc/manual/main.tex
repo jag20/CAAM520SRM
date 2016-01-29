@@ -6,13 +6,34 @@
 \usepackage{fancyvrb}
 \usepackage{amsmath}
 \usepackage{setspace}
+\usepackage[linktoc=all]{hyperref}
 \usepackage[margin=1in]{geometry}
 \usepackage[resetlabels,labeled]{multibib}
 \usepackage{wrapfig}
+\usepackage{titlesec}
 
 \newcites{New}{The other list}
 
+    \hypersetup{
+    colorlinks,
+    citecolor=blue,
+    filecolor=blue,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
 \begin{document}
+
+\tableofcontents
+
+\section{General use case}
+
+
+
+\section{PETSc use case}
+
+
+
 
 \begin{wrapfigure}{r}{0.4\textwidth}
   \begin{center}
@@ -21,14 +42,11 @@
   \caption{\footnotesize{Blue:grid points to be calculated. Red:fixed boundary estimates}}
 \end{wrapfigure}
     
-    
-    Consider $\bigtriangledown \epsilon \bigtriangleup u = f$, discretization by the spectral method and solved using multigrid.
-    
-    Discretizing the domain by the Spectral Method and solving using multigrid yields a solution with a fourier representation that is accurate up to k coefficients. To get higher accuracy, one can refine the grid further. 
-    
-    Now consider the buffer zone introduced by segmental refinement, which can be represented as a new grid with two boundary conditions encoding the error. The boundary will thus be functions with fourier coefficients of k or greater since the coarser grid was accurate up to k coefficients. The  solution to this grid with boundary values of frequency k will decay to discretization error by the time it leaves the buffer zone. On this finer grid, then, we will have error of frequency 2k or higher, combined with the error that is introduced by the buffer zone. Overall, this function will still be accurate up to coefficients of 2k. 
-    
-    
+\section{Addendum}
+\subsection{Addendum A}
+
+
+
     
     
     
