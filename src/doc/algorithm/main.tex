@@ -32,14 +32,63 @@
     
     Inductively, we will see that at every level of refinement, we get accuracy up to coefficients of $(2^n) k$ because at the previous level, we had $(2^{n-1}) k$ orders of accuracy.
     
-    Remark: We must show that the fourier coefficients of solutions to these laplace equations decay at a certain rate in order to show that solving up to $(2^{n})$ coefficients will yield a sum that decays very quickly as we take a shorter and shorter tail of the sum. Each of the functions Sin(k x) exist on the buffer zone boundary. Even if they decay at a certain rate, we must also show that the sum of these functions decays and in order to show this, there is undoubtedly a bound on the sum of their coefficients. 
+    Remark: We must show that the fourier coefficients of solutions to these laplace equations decay at a certain rate in order to show that solving up to $(2^{n})$ coefficients will yield a sum that decays very quickly as we take a shorter and shorter tail of the sum. Each of the functions Sin(k x) exist on the buffer zone boundary. Assume that the boundary has finite energy, meaning it exists in $L^2$, this implies that the sum of fourier coefficients converges by Parseval's Theorem. 
     
+    First, we must show that on a unit grid with one nonhomogenous boundary condition, the function decays exponentially away from the boundary. 
     
+    Consider the following PDE. 
     
-    
-    
-    
-    
+ \begin{gather}
+\nabla^2 \Phi (x,y) = 0 \label{laplaceexstate}\\
+\begin{split}
+\Phi(x,0) &= 0 \quad \Phi(0,y) = 0 \\
+\Phi(1,y) &= 0 \quad \Phi(x,1) = g(x). \label{laplaceexboundary}
+\end{split}
+\end{gather}    
+
+Now we must apply the nonhomogeneous boundary condition $\Phi(x,1) = g(x)$ to help us find the coefficients $B_n$.
+\begin{align*}
+\Phi(x,y)  &= \sum_{n=1}^{\infty} B_n \sin(n\pi x) \sinh(n\pi y) \\
+\end{align*}
+\begin{equation}
+B_n = \frac{2}{\sinh(n\pi)} \int_0^1 g(x) \sin(n\pi x) \, dx
+\end{equation}
+
+\begin{align*}
+Let \Phi_n(x, y) =  \frac{2}{\sinh(n\pi)} \int_0^1 [g(x) \sin(n\pi x) \, dx] \sin(n\pi x) \sinh(n\pi y)\\
+|\Phi_n(x, y)| \leq \frac{C*sin n \pi y}{\sinh(n\pi)} \leq \frac{C e^{n \pi y}}{.5*e^{n \pi}} \leq \frac{2C e^{n \pi y}}{e^{n \pi}} = 2C e^{n \pi (y-1)}
+\end{align*}
+
+Let $d = 1-y$ be the distance from the boundary. 
+
+\begin{align*}
+|\Phi_n(x, y)| \leq 2C e^{-n \pi d} < \epsilon\\
+\text{If } d \geq \frac{ln(\frac{\epsilon}{2C})}{-\pi}\\
+|\Phi_n(x, y)| \leq  \epsilon^{n}\\
+\text{Thus, }\sum_{n=1}^{\infty} |\Phi_n(x, y)| \leq \frac{\epsilon}{1-\epsilon}\\
+\end{align*}
+
+This bound needs to be improved. $\frac{ln(\frac{\epsilon}{2C})}{-\pi}$ could be very large. 
+
+
+
+%We can bound $|\Phi(x, y)|$ by $|\sum_{n=1}^{\infty}B_n| |\frac{e^{y}*(e^{2y} - 1)}{2}| \leq |\sum_{n=1}^{\infty}B_n | |\frac{e}{2} | |e^{2y}-1| = C|e^{2y}-1|$
+
+%If we can want $|\Phi(x, y)| < \epsilon$
+
+%$C|e^{2y} - 1| < \epsilon$
+
+%$e^{2y} > 1$ because $y > 0$.
+
+%$ e^{2y} < 1 + \frac{\epsilon}{C}$
+
+%$(y) < \frac{ln(1+ \frac{\epsilon}{C}$
+
+
+
+
+
+
     
 
 % \textbf{Intellectual Merit:} 
