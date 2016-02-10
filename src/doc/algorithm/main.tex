@@ -70,6 +70,13 @@ Let $d = 1-y$ be the distance from the boundary.
 
 This bound needs to be improved. $\frac{ln(\frac{\epsilon}{2C})}{-\pi}$ could be very large. 
 
+We just need epsilon up to the resolution of the grid. We need to start summing at some n. This will make $d$ more reasonable. Maybe try getting $|\Phi_n| < \frac{\epsilon}{n^2}$ instead of $\epsilon^n$. Get the bound on d by biggest fourier coefficient of g and biggest fourier coefficient of forcing f. Ask Dr. Symmes if we can estimate largest fourier coefficient efficiently. 
+
+The coarse grid has to be fine enough to make this needed $d$ reasonable, and it depends on the boundary conditions. This is the point: coarse grid must still be fine. And we can't get geometric decay. So we just want each coefficient's error to get smaller. 
+
+Cite Marcus Mohr and Achi Brandt. Can we somehow analyze $|\Phi_n(x, y)| < \epsilon * |\Phi_n(x, y)^*|$
+
+Ideally we'd like the sum of boundaries at each level needed to sum to some moderate amount. That way we need no communication when solving each level. 
 
 
 %We can bound $|\Phi(x, y)|$ by $|\sum_{n=1}^{\infty}B_n| |\frac{e^{y}*(e^{2y} - 1)}{2}| \leq |\sum_{n=1}^{\infty}B_n | |\frac{e}{2} | |e^{2y}-1| = C|e^{2y}-1|$
