@@ -314,7 +314,7 @@ PetscErrorCode PCSRMGInitializePackage()
 
 #if defined(PETSC_HAVE_DYNAMIC_LIBRARIES)
 #undef __FUNCT__
-#define __FUNCT__ "PetscDLLibraryRegister_petscsnes"
+#define __FUNCT__ "PetscDLLibraryRegister_srmg"
 /*
   PetscDLLibraryRegister - This function is called when the dynamic library it is in is opened.
 
