@@ -124,6 +124,7 @@ static PetscErrorCode PCApply_SRMG(PC pc, Vec x, Vec y)
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
+  ierr = VecCopy(x, y);CHKERRQ(ierr);
   PetscFunctionReturn(0);
 }
 
