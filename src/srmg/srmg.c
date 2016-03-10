@@ -93,6 +93,10 @@ static PetscErrorCode PCSRMGGetType_SRMG(PC pc, PCSRMGType *type)
    Notes:
    The interface routine PCSetUp() is not usually called directly by
    the user, but instead is called by PCApply() if necessary.
+
+   pcsetupcalled = 0 means that PCSetUp() has never been called
+   pcsetupcalled = 1 means that PCSetUp() has been called before
+   pcsetupcalled = 2 ???
 */
 #undef __FUNCT__
 #define __FUNCT__ "PCSetUp_SRMG"
@@ -104,27 +108,30 @@ static PetscErrorCode PCSetUp_SRMG(PC pc)
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
-  ierr = KSPCreate(PetscObjectComm((PetscObject) pc), &sr->kspcoarse);CHKERRQ(ierr);
-  ierr = KSPSetErrorIfNotConverged(sr->kspcoarse, pc->erroriffailure);CHKERRQ(ierr);
-  ierr = KSPAppendOptionsPrefix(sr->kspcoarse, "mg_coarse_");CHKERRQ(ierr);
+  if (!pc->setupcalled) {
+    ierr = KSPCreate(PetscObjectComm((PetscObject) pc), &sr->kspcoarse);CHKERRQ(ierr);
+    ierr = KSPSetErrorIfNotConverged(sr->kspcoarse, pc->erroriffailure);CHKERRQ(ierr);
+    ierr = KSPAppendOptionsPrefix(sr->kspcoarse, "mg_coarse_");CHKERRQ(ierr);
 
-  /* coarse solve is (redundant) LU by default; set shifttype NONZERO to avoid annoying zero-pivot in LU preconditioner */
-  ierr = KSPSetType(sr->kspcoarse, KSPPREONLY);CHKERRQ(ierr);
-  ierr = KSPGetPC(sr->kspcoarse, &pccoarse);CHKERRQ(ierr);
-  ierr = MPI_Comm_size(PetscObjectComm((PetscObject) pc), &size);CHKERRQ(ierr);
-  if (size > 1) {
-    KSP innerksp;
-    PC  innerpc;
+    /* coarse solve is (redundant) LU by default; set shifttype NONZERO to avoid annoying zero-pivot in LU preconditioner */
+    ierr = KSPSetType(sr->kspcoarse, KSPPREONLY);CHKERRQ(ierr);
+    ierr = KSPGetPC(sr->kspcoarse, &pccoarse);CHKERRQ(ierr);
+    ierr = MPI_Comm_size(PetscObjectComm((PetscObject) pc), &size);CHKERRQ(ierr);
+    if (size > 1) {
+      KSP innerksp;
+      PC  innerpc;
 
-    ierr = PCSetType(pccoarse, PCREDUNDANT);CHKERRQ(ierr);
-    ierr = PCRedundantGetKSP(pccoarse, &innerksp);CHKERRQ(ierr);
-    ierr = KSPGetPC(innerksp, &innerpc);CHKERRQ(ierr);
-    ierr = PCFactorSetShiftType(innerpc, MAT_SHIFT_INBLOCKS);CHKERRQ(ierr);
-  } else {
-    ierr = PCSetType(pccoarse, PCLU);CHKERRQ(ierr);
-    ierr = PCFactorSetShiftType(pccoarse, MAT_SHIFT_INBLOCKS);CHKERRQ(ierr);
+      ierr = PCSetType(pccoarse, PCREDUNDANT);CHKERRQ(ierr);
+      ierr = PCRedundantGetKSP(pccoarse, &innerksp);CHKERRQ(ierr);
+      ierr = KSPGetPC(innerksp, &innerpc);CHKERRQ(ierr);
+      ierr = PCFactorSetShiftType(innerpc, MAT_SHIFT_INBLOCKS);CHKERRQ(ierr);
+    } else {
+      ierr = PCSetType(pccoarse, PCLU);CHKERRQ(ierr);
+      ierr = PCFactorSetShiftType(pccoarse, MAT_SHIFT_INBLOCKS);CHKERRQ(ierr);
+    }
   }
   ierr = KSPSetOperators(sr->kspcoarse, pc->mat, pc->pmat);CHKERRQ(ierr);
+  ierr = KSPSetUp(sr->kspcoarse);CHKERRQ(ierr);
   /* Create patch */
   /* Create full space, if necessary */
   PetscFunctionReturn(0);
