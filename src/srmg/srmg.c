@@ -53,6 +53,7 @@ const char *const PCSRMGTypes[] = {"FULLSPACE","PATCHSPACE","PCSRMGType","PC_SRM
    Private context (data structure) for the SRMG preconditioner.
 */
 typedef struct {
+  PetscBool setfromopts;
   PetscBool fullspace;
   KSP       kspcoarse;
 } PC_SRMG;
@@ -131,6 +132,7 @@ static PetscErrorCode PCSetUp_SRMG(PC pc)
     }
   }
   ierr = KSPSetOperators(sr->kspcoarse, pc->mat, pc->pmat);CHKERRQ(ierr);
+  if (sr->setfromopts) {ierr = KSPSetFromOptions(sr->kspcoarse);CHKERRQ(ierr);}
   ierr = KSPSetUp(sr->kspcoarse);CHKERRQ(ierr);
   /* Create patch */
   /* Create full space, if necessary */
@@ -167,6 +169,7 @@ static PetscErrorCode PCReset_SRMG(PC pc)
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
+  sr->setfromopts = PETSC_FALSE;
   /* Destroy structures */
   ierr = KSPDestroy(&sr->kspcoarse);CHKERRQ(ierr);
   PetscFunctionReturn(0);
@@ -202,6 +205,7 @@ static PetscErrorCode PCSetFromOptions_SRMG(PetscOptionItems *PetscOptionsObject
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
+  sr->setfromopts = PETSC_TRUE;
   ierr = PCSRMGGetType(pc, &deftype);CHKERRQ(ierr);
   ierr = PetscOptionsHead(PetscOptionsObject, "SRMG options");CHKERRQ(ierr);
   ierr = PetscOptionsEnum("-pc_srmg_type", "How much to store", "PCSRMGSetType", PCSRMGTypes, (PetscEnum) deftype, (PetscEnum *) &type, &flg);CHKERRQ(ierr);
@@ -272,8 +276,9 @@ PETSC_EXTERN PetscErrorCode PCCreate_SRMG(PC pc)
      Initialize the pointers to vectors to ZERO; these will be used to store
      diagonal entries of the matrix for fast preconditioner application.
   */
-  sr->fullspace = PETSC_TRUE;
-  sr->kspcoarse = NULL;
+  sr->fullspace   = PETSC_TRUE;
+  sr->setfromopts = PETSC_FALSE;
+  sr->kspcoarse   = NULL;
 
   /*
       Set the pointers for the functions that are provided above.
