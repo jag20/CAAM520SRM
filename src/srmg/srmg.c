@@ -111,7 +111,7 @@ static PetscErrorCode PCSetUp_SRMG(PC pc)
   if (!pc->setupcalled) {
     ierr = KSPCreate(PetscObjectComm((PetscObject) pc), &sr->kspcoarse);CHKERRQ(ierr);
     ierr = KSPSetErrorIfNotConverged(sr->kspcoarse, pc->erroriffailure);CHKERRQ(ierr);
-    ierr = KSPAppendOptionsPrefix(sr->kspcoarse, "mg_coarse_");CHKERRQ(ierr);
+    ierr = KSPAppendOptionsPrefix(sr->kspcoarse, "srmg_coarse_");CHKERRQ(ierr);
 
     /* coarse solve is (redundant) LU by default; set shifttype NONZERO to avoid annoying zero-pivot in LU preconditioner */
     ierr = KSPSetType(sr->kspcoarse, KSPPREONLY);CHKERRQ(ierr);
