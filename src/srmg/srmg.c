@@ -98,9 +98,31 @@ static PetscErrorCode PCSRMGGetType_SRMG(PC pc, PCSRMGType *type)
 static PetscErrorCode PCSetUp_SRMG(PC pc)
 {
   PC_SRMG      *sr = (PC_SRMG *) pc->data;
+  PetscMPIInt    size;
+  KSP kspcoarse;
+  PC             ipc;
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
+  ierr = KSPCreate(PetscObjectComm((PetscObject) pc),&kspcoarse);CHKERRQ(ierr);
+  ierr = KSPSetErrorIfNotConverged(kspcoarse,pc->erroriffailure);CHKERRQ(ierr);
+  ierr = KSPAppendOptionsPrefix(kspcoarse,"mg_coarse_");CHKERRQ(ierr);
+
+  /* coarse solve is (redundant) LU by default; set shifttype NONZERO to avoid annoying zero-pivot in LU preconditioner */
+  ierr = KSPSetType(kspcoarse,KSPPREONLY);CHKERRQ(ierr);
+  ierr = KSPGetPC(kspcoarse,&ipc);CHKERRQ(ierr);
+  ierr = MPI_Comm_size(PetscObjectComm((PetscObject) pc),&size);CHKERRQ(ierr);
+  if (size > 1) {
+    KSP innerksp;
+    PC  innerpc;
+    ierr = PCSetType(ipc,PCREDUNDANT);CHKERRQ(ierr);
+    ierr = PCRedundantGetKSP(ipc,&innerksp);CHKERRQ(ierr);
+    ierr = KSPGetPC(innerksp,&innerpc);CHKERRQ(ierr);
+    ierr = PCFactorSetShiftType(innerpc,MAT_SHIFT_INBLOCKS);CHKERRQ(ierr);
+  } else {
+    ierr = PCSetType(ipc,PCLU);CHKERRQ(ierr);
+    ierr = PCFactorSetShiftType(ipc,MAT_SHIFT_INBLOCKS);CHKERRQ(ierr);
+  }
   /* Create patch */
   /* Create full space, if necessary */
   PetscFunctionReturn(0);
