@@ -299,3 +299,34 @@ PetscErrorCode PCSRMGGetType(PC pc, PCSRMGType *type)
   ierr = PetscUseMethod(pc, "PCSRMGGetType_C", (PC,PCSRMGType*), (pc,type));CHKERRQ(ierr);
   PetscFunctionReturn(0);
 }
+
+#undef __FUNCT__
+#define __FUNCT__ "PCSRMGInitializePackage"
+PetscErrorCode PCSRMGInitializePackage()
+{
+  PetscErrorCode ierr;
+
+  PetscFunctionBegin;
+  ierr = PCRegister(PCSRMG, PCCreate_SRMG);CHKERRQ(ierr);
+  PetscFunctionReturn(0);
+}
+
+#if defined(PETSC_HAVE_DYNAMIC_LIBRARIES)
+#undef __FUNCT__
+#define __FUNCT__ "PetscDLLibraryRegister_petscsnes"
+/*
+  PetscDLLibraryRegister - This function is called when the dynamic library it is in is opened.
+
+  This registers all of the SNES methods that are in the basic PETSc libpetscsnes library.
+
+ */
+PETSC_EXTERN PetscErrorCode PetscDLLibraryRegister_srmg(void)
+{
+  PetscErrorCode ierr;
+
+  PetscFunctionBegin;
+  ierr = PCSRMGInitializePackage();CHKERRQ(ierr);
+  PetscFunctionReturn(0);
+}
+
+#endif /* PETSC_HAVE_DYNAMIC_LIBRARIES */
