@@ -164,7 +164,7 @@ static PetscErrorCode PCDestroy_SRMG(PC pc)
 #define __FUNCT__ "PCSetFromOptions_SRMG"
 static PetscErrorCode PCSetFromOptions_SRMG(PetscOptionItems *PetscOptionsObject,PC pc)
 {
-  PC_SRMG       *sr = (PC_SRMG*)pc->data;
+  PC_SRMG       *sr = (PC_SRMG *) pc->data;
   PCSRMGType     deftype, type;
   PetscBool      flg;
   PetscErrorCode ierr;
@@ -175,6 +175,23 @@ static PetscErrorCode PCSetFromOptions_SRMG(PetscOptionItems *PetscOptionsObject
   ierr = PetscOptionsEnum("-pc_srmg_type", "How much to store", "PCSRMGSetType", PCSRMGTypes, (PetscEnum) deftype, (PetscEnum *) &type, &flg);CHKERRQ(ierr);
   if (flg) {ierr = PCSRMGSetType(pc, type);CHKERRQ(ierr);}
   ierr = PetscOptionsTail();CHKERRQ(ierr);
+  PetscFunctionReturn(0);
+}
+
+#undef __FUNCT__
+#define __FUNCT__ "PCView_SRMG"
+PetscErrorCode PCView_SRMG(PC pc, PetscViewer viewer)
+{
+  PC_SRMG       *sr = (PC_SRMG *) pc->data;
+  PetscBool      isascii;
+  PetscErrorCode ierr;
+
+  PetscFunctionBegin;
+  ierr = PetscObjectTypeCompare((PetscObject) viewer, PETSCVIEWERASCII, &isascii);CHKERRQ(ierr);
+  if (isascii) {
+    if (sr->fullspace) {ierr = PetscViewerASCIIPrintf(viewer,"  SRMG storing the full space\n");CHKERRQ(ierr);}
+    else               {ierr = PetscViewerASCIIPrintf(viewer,"  SRMG storing only the patch space\n");CHKERRQ(ierr);}
+  }
   PetscFunctionReturn(0);
 }
 
@@ -234,7 +251,7 @@ PETSC_EXTERN PetscErrorCode PCCreate_SRMG(PC pc)
   pc->ops->reset               = PCReset_SRMG;
   pc->ops->destroy             = PCDestroy_SRMG;
   pc->ops->setfromoptions      = PCSetFromOptions_SRMG;
-  pc->ops->view                = 0;
+  pc->ops->view                = PCView_SRMG;
   pc->ops->applyrichardson     = 0;
 
   ierr = PetscObjectComposeFunction((PetscObject) pc, "PCSRMGSetType_C", PCSRMGSetType_SRMG);CHKERRQ(ierr);
