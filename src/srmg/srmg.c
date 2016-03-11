@@ -227,7 +227,7 @@ PetscErrorCode PCView_SRMG(PC pc, PetscViewer viewer)
   if (isascii) {
     if (sr->fullspace) {ierr = PetscViewerASCIIPrintf(viewer,"  SRMG storing the full space\n");CHKERRQ(ierr);}
     else               {ierr = PetscViewerASCIIPrintf(viewer,"  SRMG storing only the patch space\n");CHKERRQ(ierr);}
-    ierr = PetscViewerASCIIPrintf(viewer, "Coarse grid solver ----------------------------------------\n");CHKERRQ(ierr);
+    ierr = PetscViewerASCIIPrintf(viewer, "SRMG Coarse grid solver ----------------------------------------\n");CHKERRQ(ierr);
     ierr = PetscViewerASCIIPushTab(viewer);CHKERRQ(ierr);
     ierr = KSPView(sr->kspcoarse, viewer);CHKERRQ(ierr);
     ierr = PetscViewerASCIIPopTab(viewer);CHKERRQ(ierr);
