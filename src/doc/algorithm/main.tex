@@ -42,30 +42,35 @@
 \nabla^2 \Phi (x,y) = 0 \label{laplaceexstate}\\
 \begin{split}
 \Phi(x,0) &= 0 \quad \Phi(0,y) = 0 \\
-\Phi(1,y) &= 0 \quad \Phi(x,1) = g(x). \label{laplaceexboundary}
+\Phi(L,y) &= 0 \quad \Phi(x,L) = g(x). \label{laplaceexboundary}
 \end{split}
 \end{gather}    
 
 Now we must apply the nonhomogeneous boundary condition $\Phi(x,1) = g(x)$ to help us find the coefficients $B_n$.
 \begin{align*}
-\Phi(x,y)  &= \sum_{n=1}^{\infty} B_n \sin(n\pi x) \sinh(n\pi y) \\
+\Phi(x,y)  &= \sum_{n=1}^{\infty} B_n \sin(\frac{n\pi x}{L}) \sinh(\frac{n\pi y}{L}) \\
 \end{align*}
 \begin{equation}
-B_n = \frac{2}{\sinh(n\pi)} \int_0^1 g(x) \sin(n\pi x) \, dx
+B_n = \frac{\frac{2}{L}}{\sinh(\frac{n\pi}{L})} \int_0^1 g(x) \sin(n\pi x) \, dx
 \end{equation}
 
 \begin{align*}
-Let \Phi_n(x, y) =  \frac{2}{\sinh(n\pi)} \int_0^1 [g(x) \sin(n\pi x) \, dx] \sin(n\pi x) \sinh(n\pi y)\\
-|\Phi_n(x, y)| \leq \frac{C*sin n \pi y}{\sinh(n\pi)} \leq \frac{C e^{n \pi y}}{.5*e^{n \pi}} \leq \frac{2C e^{n \pi y}}{e^{n \pi}} = 2C e^{n \pi (y-1)}
+\text{Let C }= max(\int_0^1 [g(x) \sin(\frac{n\pi x}{L}) \, dx]\\
+\text{Let $\Phi_n(x, y)$ }=  \frac{\frac{2}{L}}{\sinh(n\pi}\int_0^1 [g(x) \sin(\frac{n\pi x}{L}) \, dx] \sin(\frac{n\pi x}{L}) \sinh(\frac{n\pi y}{L})\\
+|\Phi_n(x, y)| \leq \frac{2C*sin \frac{n \pi y}{L}}{L\sinh(n\pi)} \leq \frac{2C e^{\frac{n \pi y}{L}}}{L.5*e^{n \pi}} \leq \frac{4C e^{\frac{n \pi y}{L}}}{e^{n \pi}} = \frac{4C}{L} e^\frac{{n \pi (y-L)}}{L}
 \end{align*}
 
-Let $d = 1-y$ be the distance from the boundary. 
+Let $d = L-y$ be the distance from the boundary. 
 
 \begin{align*}
-|\Phi_n(x, y)| \leq 2C e^{-n \pi d} < \epsilon\\
-\text{If } d \geq \frac{ln(\frac{\epsilon}{2C})}{-\pi}\\
-|\Phi_n(x, y)| \leq  \epsilon^{n}\\
-\text{Thus, }\sum_{n=1}^{\infty} |\Phi_n(x, y)| \leq \frac{\epsilon}{1-\epsilon}\\
+|\Phi_n(x, y)| \leq \frac{4C}{L} e^\frac{{-n \pi d}}{L} \\
+|\Phi(x, y)| \leq \frac{4C * e^\frac{-n_0 \pi d}{L}}{L*(1 - e^\frac{-\pi d}{L})} < \epsilon\\
+\end{align*}
+
+\begin{align*}
+d > ln(\frac{\epsilon * L(1 - e^\frac{-\pi d}{L}}{{4C}})*\frac{L}{-n_0 * \pi}\\
+\text{Let L }= 2^{-k} \\
+d > \frac{-ln\epsilon + kln(2) - ln(1 - e^\frac{-\pi d}{L}) - ln4C }{2^k n_0 \pi}\\
 \end{align*}
 
 This bound needs to be improved. $\frac{ln(\frac{\epsilon}{2C})}{-\pi}$ could be very large. 
@@ -91,8 +96,7 @@ Ideally we'd like the sum of boundaries at each level needed to sum to some mode
 
 %$(y) < \frac{ln(1+ \frac{\epsilon}{C}$
 
-
-
+If we just need quadratic convergence, i.e. $|Phi_n(x, y)| < \frac{\epsilon}{n^2}$, then the distance requirement changes to $d \geq \frac{lnC + 2lnn - ln\epsilon}{2 \pi n}$. By choosing a sufficiently fine coarse grid, we can make this distance requirement reasonable. 
 
 
 
