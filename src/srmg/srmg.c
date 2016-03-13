@@ -103,18 +103,21 @@ static PetscErrorCode PCSRMGGetType_SRMG(PC pc, PCSRMGType *type)
 #define __FUNCT__ "PCSetUp_SRMG"
 static PetscErrorCode PCSetUp_SRMG(PC pc)
 {
-  PC_SRMG      *sr = (PC_SRMG *) pc->data;
+  PC_SRMG       *sr = (PC_SRMG *) pc->data;
   PetscMPIInt    size;
   PC             pccoarse;
+  PetscInt       tab;
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
   if (!pc->setupcalled) {
+    /* Create coarse solver */
     ierr = KSPCreate(PetscObjectComm((PetscObject) pc), &sr->kspcoarse);CHKERRQ(ierr);
     ierr = KSPSetErrorIfNotConverged(sr->kspcoarse, pc->erroriffailure);CHKERRQ(ierr);
     ierr = KSPAppendOptionsPrefix(sr->kspcoarse, "srmg_coarse_");CHKERRQ(ierr);
-
-    /* coarse solve is (redundant) LU by default; set shifttype NONZERO to avoid annoying zero-pivot in LU preconditioner */
+    ierr = PetscObjectGetTabLevel((PetscObject) pc, &tab);CHKERRQ(ierr);
+    ierr = KSPSetTabLevel(sr->kspcoarse, tab+1);CHKERRQ(ierr);
+    /*   coarse solve is (redundant) LU by default; set shifttype NONZERO to avoid annoying zero-pivot in LU preconditioner */
     ierr = KSPSetType(sr->kspcoarse, KSPPREONLY);CHKERRQ(ierr);
     ierr = KSPGetPC(sr->kspcoarse, &pccoarse);CHKERRQ(ierr);
     ierr = MPI_Comm_size(PetscObjectComm((PetscObject) pc), &size);CHKERRQ(ierr);
@@ -134,8 +137,6 @@ static PetscErrorCode PCSetUp_SRMG(PC pc)
   ierr = KSPSetOperators(sr->kspcoarse, pc->mat, pc->pmat);CHKERRQ(ierr);
   if (sr->setfromopts) {ierr = KSPSetFromOptions(sr->kspcoarse);CHKERRQ(ierr);}
   ierr = KSPSetUp(sr->kspcoarse);CHKERRQ(ierr);
-  /* Create patch */
-  /* Create full space, if necessary */
   PetscFunctionReturn(0);
 }
 
