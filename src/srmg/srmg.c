@@ -100,16 +100,17 @@ static PetscErrorCode PCSRMGGetType_SRMG(PC pc, PCSRMGType *type)
 
 #undef __FUNCT__
 #define __FUNCT__ "PCSRMGCreatePatch_Static"
-static PetscErrorCode PCSRMGCreatePatch_Static(DM dm, PetscInt quadrant, PetscInt buffer, DM *patch)
+static PetscErrorCode PCSRMGCreatePatch_Static(DM dm, PetscInt quadrant, PetscInt buffer, VecScatter *scPatch, DM *patch)
 {
   DMDAStencilType stencil_type;
   Vec             gv, lv;
   VecScatter      gtol;
-  IS              is;
-  PetscInt        dim, dof, s, N, *idx, i;
+  IS              is, gis;
+  PetscInt        dim, dof, s, N, *idx, *gidx, i, j, k;
   PetscInt        xs, xm, ys, ym, zs, zm;
   PetscInt        pxs, pxm, pys, pym, pzs, pzm;
   PetscInt        Xs, Xm, Ys, Ym, Zs, Zm;
+  PetscReal       cxs, cxe, cys, cye, czs, cze;
   MPI_Comm        comm;
   PetscErrorCode  ierr;
 
@@ -129,46 +130,42 @@ static PetscErrorCode PCSRMGCreatePatch_Static(DM dm, PetscInt quadrant, PetscIn
   /* Determine patch */
   ierr = DMDAGetCorners(dm, &xs, &ys, &zs, &xm, &ym, &zm);CHKERRQ(ierr);
   ierr = DMDAGetGhostCorners(dm, &Xs, &Ys, &Zs, &Xm, &Ym, &Zm);CHKERRQ(ierr);
-#if 0
-  if (quadrant & 0x1) {pxs = xs + xm/2; pxm = xm - xm/2;}
-  else                {pxs = xs;        pxm = xm/2;}
-  if (quadrant & 0x3) {pys = ys + ym/2; pym = ym - ym/2;}
-  else                {pys = ys;        pym = ym/2;}
-  if (quadrant & 0x5) {pzs = zs + zm/2; pzm = zm - zm/2;}
-  else                {pzs = zs;        pzm = zm/2;}
-#else
-  pxs = xs; pxm = xm;
-  pys = ys; pym = ym;
-  pzs = zs; pzm = zm;
-#endif
+  if (quadrant & 0x1) {pxs = xs + (xm-1)/2; pxm = xm - (xm-1)/2; cxs = xm > 1 ? pxs/((PetscReal)xm-1) : 0.0; cxe = 1.0;}
+  else                {pxs = xs;            pxm = (xm+1)/2;      cxs = 0.0;                                  cxe = xm > 1 ? (pxm-1)/((PetscReal)xm-1) : 1.0;}
+  if (quadrant & 0x2) {pys = ys + (ym-1)/2; pym = ym - (ym-1)/2; cys = ym > 1 ? pys/((PetscReal)ym-1) : 0.0; cye = 1.0;}
+  else                {pys = ys;            pym = (ym+1)/2;      cys = 0.0;                                  cye = ym > 1 ? (pym-1)/((PetscReal)ym-1) : 1.0;}
+  if (quadrant & 0x4) {pzs = zs + (zm-1)/2; pzm = zm - (zm-1)/2; czs = zm > 1 ? pzs/((PetscReal)zm-1) : 0.0; cze = 1.0;}
+  else                {pzs = zs;            pzm = (zm+1)/2;      czs = 0.0;                                  cze = zm > 1 ? (pzm-1)/((PetscReal)zm-1) : 1.0;}
   ierr = DMDASetSizes(*patch, pxm, pym, pzm);CHKERRQ(ierr);
-  ierr = DMDASetCorners(*patch, xs, ys, zs, xm, ym, zm);CHKERRQ(ierr);
-  ierr = DMDASetGhostCorners(*patch, xs, ys, zs, xm, ym, zm);CHKERRQ(ierr);
-  /* TODO Project coordinates just like solution */
-  ierr = DMDASetUniformCoordinates(*patch, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0);CHKERRQ(ierr);
   ierr = DMCopyDMSNES(dm, *patch);CHKERRQ(ierr);
-  /* Now I have to do the rest of DMSetUp() since the DA version does too much we do not want */
-  {
-    DM_DA *da = (DM_DA *) (*patch)->data;
-
-    da->Nlocal = xm*ym*zm*dof;
-    da->nlocal = xm*xm*zm*dof; /* TODO Should be ghosted sizes */
-  }
-  /*   Create scatter and l2g map, which are useless here */
+  ierr = DMSetUp(*patch);CHKERRQ(ierr);
+  /*   Create scatter from coarse global vector to patch local vector */
   N    = pxm*pym*pzm;
   ierr = PetscMalloc1(N, &idx);CHKERRQ(ierr);
-  for (i = 0; i < N; ++i) idx[i] = i;
-  ierr = ISCreateBlock(PETSC_COMM_SELF, dof, N, idx, PETSC_OWN_POINTER, &is);CHKERRQ(ierr);
-  ierr = ISLocalToGlobalMappingCreateIS(is, &(*patch)->ltogmap);CHKERRQ(ierr);
-  ierr = PetscLogObjectParent((PetscObject) *patch, (PetscObject) (*patch)->ltogmap);CHKERRQ(ierr);
-  ierr = DMGetGlobalVector(*patch, &gv);CHKERRQ(ierr);
+  ierr = PetscMalloc1(N, &gidx);CHKERRQ(ierr);
+  ierr = DMGetGlobalVector(dm, &gv);CHKERRQ(ierr);
   ierr = DMGetLocalVector(*patch, &lv);CHKERRQ(ierr);
-  ierr = VecScatterCreate(gv, is, lv, is, &gtol);CHKERRQ(ierr);
-  ierr = DMDASetScatter(*patch, gtol, NULL);CHKERRQ(ierr);
-  ierr = PetscLogObjectParent((PetscObject) *patch, (PetscObject) gtol);CHKERRQ(ierr);
-  ierr = DMRestoreGlobalVector(*patch, &gv);CHKERRQ(ierr);
-  ierr = DMRestoreLocalVector(*patch, &lv);CHKERRQ(ierr);
+  for (k = pzs; k < pzs+pzm; ++k) {
+    for (j = pys; j < pys+pym; ++j) {
+      for (i = pxs; i < pxs+pxm; ++i) {
+        const PetscInt lo = ((k - pzs)*pym + (j - pys))*pxm + (i - pxs);
+        const PetscInt go = (k*ym + j)*xm + i;
+
+        idx[lo]  = lo;
+        gidx[lo] = go;
+      }
+    }
+  }
+  ierr = ISCreateBlock(PETSC_COMM_SELF, dof, N,  idx, PETSC_OWN_POINTER, &is);CHKERRQ(ierr);
+  ierr = ISCreateBlock(PETSC_COMM_SELF, dof, N, gidx, PETSC_OWN_POINTER, &gis);CHKERRQ(ierr);
+  ierr = VecScatterCreate(gv, gis, lv, is, scPatch);CHKERRQ(ierr);
   ierr = ISDestroy(&is);CHKERRQ(ierr);
+  ierr = ISDestroy(&gis);CHKERRQ(ierr);
+  ierr = DMRestoreGlobalVector(dm, &gv);CHKERRQ(ierr);
+  ierr = DMRestoreLocalVector(*patch, &lv);CHKERRQ(ierr);
+  /* Scatter in coordinates */
+  ierr = DMDASetUniformCoordinates(*patch, cxs, cxe, cys, cye, czs, cze);CHKERRQ(ierr);
+  ierr = DMViewFromOptions(*patch, NULL, "-dm_view");CHKERRQ(ierr);
   dm->setupcalled = PETSC_TRUE;
   PetscFunctionReturn(0);
 }
@@ -518,7 +515,10 @@ static PetscErrorCode SNESSetUp_SRMG(SNES snes)
 static PetscErrorCode SNESSolve_SRMG(SNES snes)
 {
   SNES_SRMG     *sr = (SNES_SRMG *) snes->data;
-  Vec            oldsol;
+  DM             dm;
+  Vec            oldsol, uPatch;
+  VecScatter     scPatch;
+  PetscInt       numQuadrants = 1, q, dim, d;
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
@@ -528,20 +528,33 @@ static PetscErrorCode SNESSolve_SRMG(SNES snes)
   ierr = VecDuplicate(snes->vec_sol, &oldsol);CHKERRQ(ierr);
   ierr = VecCopy(snes->vec_sol, oldsol);CHKERRQ(ierr);
   ierr = SNESSolve(sr->solCoarse, snes->vec_rhs, snes->vec_sol);CHKERRQ(ierr);
-  {
-    DM dm, dmPatch;
+  ierr = SNESGetDM(sr->solCoarse, &dm);CHKERRQ(ierr);
+  ierr = DMGetDimension(dm, &dim);CHKERRQ(ierr);
+  for (d = 0; d < dim; ++d) numQuadrants *= 2;
+  for (q = 0; q < numQuadrants; ++q) {
+    DM  dmPatch;
+    Vec bcv;
 
     ierr = SNESReset(sr->solPatch);CHKERRQ(ierr);
-    ierr = SNESGetDM(sr->solCoarse, &dm);CHKERRQ(ierr);
-    /* TODO Must interpolate coordinates */
-    ierr = PCSRMGCreatePatch_Static(dm, 0, 0, &dmPatch);CHKERRQ(ierr);
+    ierr = PCSRMGCreatePatch_Static(dm, q, 0, &scPatch, &dmPatch);CHKERRQ(ierr);
     ierr = SNESSetDM(sr->solPatch, dmPatch);CHKERRQ(ierr);
-    ierr = DMDestroy(&dmPatch);CHKERRQ(ierr);
     if (sr->setfromopts) {ierr = SNESSetFromOptions(sr->solPatch);CHKERRQ(ierr);}
+    ierr = DMGetGlobalVector(dmPatch, &uPatch);CHKERRQ(ierr);
     /* TODO Must interpolate rhs and solution vector */
-    /* FORNOW Reset solution so I can check that patch works */
-    ierr = VecCopy(oldsol, snes->vec_sol);CHKERRQ(ierr);
-    ierr = SNESSolve(sr->solPatch, snes->vec_rhs, snes->vec_sol);CHKERRQ(ierr);
+    ierr = VecScatterBegin(scPatch, snes->vec_sol, uPatch, INSERT_VALUES, SCATTER_FORWARD);CHKERRQ(ierr);
+    ierr = VecScatterEnd(scPatch, snes->vec_sol, uPatch, INSERT_VALUES, SCATTER_FORWARD);CHKERRQ(ierr);
+    ierr = VecViewFromOptions(uPatch, (PetscObject) sr->solPatch, "-sol_view");CHKERRQ(ierr);
+    /* Setup patch boundary conditions */
+    ierr = DMGetNamedLocalVector(dmPatch, "_petsc_boundary_conditions_", &bcv);CHKERRQ(ierr);
+    ierr = VecCopy(uPatch, bcv);CHKERRQ(ierr);
+    ierr = DMRestoreNamedLocalVector(dmPatch, "_petsc_boundary_conditions_", &bcv);CHKERRQ(ierr);
+    ierr = SNESSolve(sr->solPatch, NULL, uPatch);CHKERRQ(ierr);
+    /* TODO Process patch solution */
+    ierr = VecScatterBegin(scPatch, uPatch, snes->vec_sol, INSERT_VALUES, SCATTER_REVERSE);CHKERRQ(ierr);
+    ierr = VecScatterEnd(scPatch, uPatch, snes->vec_sol, INSERT_VALUES, SCATTER_REVERSE);CHKERRQ(ierr);
+    ierr = DMRestoreGlobalVector(dmPatch, &uPatch);CHKERRQ(ierr);
+    ierr = VecScatterDestroy(&scPatch);CHKERRQ(ierr);
+    ierr = DMDestroy(&dmPatch);CHKERRQ(ierr);
   }
   ierr = VecDestroy(&oldsol);CHKERRQ(ierr);
   {
