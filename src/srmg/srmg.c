@@ -362,8 +362,8 @@ PetscErrorCode PCSRMGGetType(PC pc, PCSRMGType *type)
 }
 
 #undef __FUNCT__
-#define __FUNCT__ "PCSRMGInitializePackage"
-PetscErrorCode PCSRMGInitializePackage()
+#define __FUNCT__ "SRMGInitializePackage"
+PetscErrorCode SRMGInitializePackage()
 {
   PetscErrorCode ierr;
 
@@ -386,7 +386,7 @@ PETSC_EXTERN PetscErrorCode PetscDLLibraryRegister_srmg(void)
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
-  ierr = PCSRMGInitializePackage();CHKERRQ(ierr);
+  ierr = SRMGInitializePackage();CHKERRQ(ierr);
   PetscFunctionReturn(0);
 }
 
