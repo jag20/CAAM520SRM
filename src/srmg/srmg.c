@@ -304,7 +304,7 @@ PETSC_EXTERN PetscErrorCode PCCreate_SRMG(PC pc)
 #undef __FUNCT__
 #define __FUNCT__ "PCSRMGSetType"
 /*@
-  PCSRMGGetType - Sets the storage strategy for the preconditioner
+  PCSRMGSetType - Sets the storage strategy for the preconditioner
 
   Logically Collective on PC
 
