@@ -117,6 +117,7 @@ static PetscErrorCode PCSRMGCreatePatch_Static(DM dm, PetscInt quadrant, PetscIn
   ierr = PetscObjectGetComm((PetscObject) dm, &comm);CHKERRQ(ierr);
   if (buffer) SETERRQ1(comm, PETSC_ERR_SUP, "Only support buffer size 0, not %d", buffer);
   ierr = DMDACreate(PETSC_COMM_SELF, patch);CHKERRQ(ierr);
+  ierr = DMAppendOptionsPrefix(*patch, "srmg_patch_");CHKERRQ(ierr);
   ierr = DMGetDimension(dm, &dim);CHKERRQ(ierr);
   ierr = DMSetDimension(*patch, dim);CHKERRQ(ierr);
   ierr = DMDAGetDof(dm, &dof);CHKERRQ(ierr);
