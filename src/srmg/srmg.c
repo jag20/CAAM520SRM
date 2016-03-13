@@ -98,7 +98,6 @@ static PetscErrorCode PCSRMGGetType_SRMG(PC pc, PCSRMGType *type)
 
    pcsetupcalled = 0 means that PCSetUp() has never been called
    pcsetupcalled = 1 means that PCSetUp() has been called before
-   pcsetupcalled = 2 ???
 */
 #undef __FUNCT__
 #define __FUNCT__ "PCSetUp_SRMG"
