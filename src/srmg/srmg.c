@@ -66,6 +66,7 @@ static PetscErrorCode PCSRMGSetType_SRMG(PC pc, PCSRMGType type)
 
   PetscFunctionBegin;
   if (type == PC_SRMG_FULLSPACE) {sr->fullspace = PETSC_TRUE;}
+  else sr->fullspace = PETSC_FALSE;
   PetscFunctionReturn(0);
 }
 
