@@ -625,7 +625,7 @@ static PetscErrorCode SNESSetFromOptions_SRMG(PetscOptionItems *PetscOptionsObje
   PetscFunctionBegin;
   sr->setfromopts = PETSC_TRUE;
   ierr = PetscOptionsHead(PetscOptionsObject, "SRMG options");CHKERRQ(ierr);
-  ierr = PetscOptionsInt("-pc_srmg_levels", "How many refinements to make", "SNESSRMGSetNumLevels", sr->numLevels, &sr->numLevels, NULL);CHKERRQ(ierr);
+  ierr = PetscOptionsInt("-snes_srmg_levels", "How many refinements to make", "SNESSRMGSetNumLevels", sr->numLevels, &sr->numLevels, NULL);CHKERRQ(ierr);
   ierr = PetscOptionsTail();CHKERRQ(ierr);
   PetscFunctionReturn(0);
 }
