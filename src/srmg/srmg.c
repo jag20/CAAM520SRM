@@ -183,7 +183,7 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
     for (j = pYs; j < pYs+pYm; ++j) {
       for (i = pXs; i < pXs+pXm; ++i) {
         const PetscInt lo = ((k - pZs)*pYm + (j - pYs))*pXm + (i - pXs);
-        const PetscInt go = (k*Ym + j)*Xm + i;
+        const PetscInt go = ((k -  Zs)*Ym  + (j -  Ys))*Xm  + (i -  Xs);
 
         idx[lo]  = lo;
         gidx[lo] = go;
