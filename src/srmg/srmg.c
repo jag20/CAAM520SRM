@@ -99,24 +99,46 @@ static PetscErrorCode PCSRMGGetType_SRMG(PC pc, PCSRMGType *type)
 }
 
 #undef __FUNCT__
-#define __FUNCT__ "PCSRMGCreatePatch_Static"
-static PetscErrorCode PCSRMGCreatePatch_Static(DM dm, PetscInt quadrant, PetscInt buffer, VecScatter *scPatch, DM *patch)
+#define __FUNCT__ "SNESSRMGGetBounds_Static"
+PetscErrorCode SNESSRMGGetBounds_Static(PetscInt quadrant, PetscInt buffer, PetscInt mask, PetscInt S, PetscInt s, PetscInt *pS, PetscInt *ps, PetscInt M, PetscInt m, PetscInt *pM, PetscInt *pm, PetscReal cs, PetscReal *pcs, PetscReal ce, PetscReal *pce)
+{
+  PetscFunctionBegin;
+  if (quadrant & mask) {
+    *ps  = s + (m-1)/2;
+    *pS  = PetscMax(*ps - buffer, S);
+    *pm  = m - (m-1)/2;
+    *pM  = (*ps-*pS) + PetscMin(*pm + buffer, S+M - *ps);
+    *pcs = cs + (M > 1 ? (*pS - S)*(ce-cs)/(M-1) : 0.0);
+    *pce = ce;
+  } else {
+    *ps  = s;
+    *pS  = PetscMax(s - buffer, S);
+    *pm  = (m+1)/2;
+    *pM  = (*ps-*pS) + PetscMin(*pm + buffer, S+M - *ps);
+    *pcs = cs;
+    *pce = cs + (m > 1 ? ((*pS + *pM)-1)*(ce-cs)/(M-1) : ce);
+  }
+  PetscFunctionReturn(0);
+}
+
+#undef __FUNCT__
+#define __FUNCT__ "SNESSRMGCreatePatch_Static"
+static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, PetscInt buffer, VecScatter *scPatch, DM *patch)
 {
   DMDAStencilType stencil_type;
   Vec             gv, lv;
   VecScatter      gtol;
   IS              is, gis;
   PetscInt        dim, dof, s, N, *idx, *gidx, i, j, k;
-  PetscInt        xs, xm, ys, ym, zs, zm;
-  PetscInt        pxs, pxm, pys, pym, pzs, pzm;
-  PetscInt        Xs, Xm, Ys, Ym, Zs, Zm;
+  PetscInt        xs,  xm,  ys,  ym,  zs,  zm,  Xs,  Xm,  Ys,  Ym,  Zs,  Zm;
+  PetscInt        pxs, pxm, pys, pym, pzs, pzm, pXs, pXm, pYs, pYm, pZs, pZm;
   PetscReal       cxs, cxe, cys, cye, czs, cze;
   MPI_Comm        comm;
   PetscErrorCode  ierr;
 
   PetscFunctionBegin;
   ierr = PetscObjectGetComm((PetscObject) dm, &comm);CHKERRQ(ierr);
-  if (buffer) SETERRQ1(comm, PETSC_ERR_SUP, "Only support buffer size 0, not %d", buffer);
+  if (buffer < 0) SETERRQ1(comm, PETSC_ERR_SUP, "Buffer size must be non-negative, not %d", buffer);
   ierr = DMDACreate(PETSC_COMM_SELF, patch);CHKERRQ(ierr);
   ierr = DMAppendOptionsPrefix(*patch, "srmg_patch_");CHKERRQ(ierr);
   ierr = DMGetDimension(dm, &dim);CHKERRQ(ierr);
@@ -128,28 +150,28 @@ static PetscErrorCode PCSRMGCreatePatch_Static(DM dm, PetscInt quadrant, PetscIn
   ierr = DMDAGetStencilWidth(dm, &s);CHKERRQ(ierr);
   ierr = DMDASetStencilWidth(*patch, s);CHKERRQ(ierr);
   /* Determine patch */
-  ierr = DMDAGetCorners(dm, &xs, &ys, &zs, &xm, &ym, &zm);CHKERRQ(ierr);
-  ierr = DMDAGetGhostCorners(dm, &Xs, &Ys, &Zs, &Xm, &Ym, &Zm);CHKERRQ(ierr);
-  if (quadrant & 0x1) {pxs = xs + (xm-1)/2; pxm = xm - (xm-1)/2; cxs = xm > 1 ? pxs/((PetscReal)xm-1) : 0.0; cxe = 1.0;}
-  else                {pxs = xs;            pxm = (xm+1)/2;      cxs = 0.0;                                  cxe = xm > 1 ? (pxm-1)/((PetscReal)xm-1) : 1.0;}
-  if (quadrant & 0x2) {pys = ys + (ym-1)/2; pym = ym - (ym-1)/2; cys = ym > 1 ? pys/((PetscReal)ym-1) : 0.0; cye = 1.0;}
-  else                {pys = ys;            pym = (ym+1)/2;      cys = 0.0;                                  cye = ym > 1 ? (pym-1)/((PetscReal)ym-1) : 1.0;}
-  if (quadrant & 0x4) {pzs = zs + (zm-1)/2; pzm = zm - (zm-1)/2; czs = zm > 1 ? pzs/((PetscReal)zm-1) : 0.0; cze = 1.0;}
-  else                {pzs = zs;            pzm = (zm+1)/2;      czs = 0.0;                                  cze = zm > 1 ? (pzm-1)/((PetscReal)zm-1) : 1.0;}
-  ierr = DMDASetSizes(*patch, pxm, pym, pzm);CHKERRQ(ierr);
+  ierr = DMDAGetCorners(dm, &Xs, &Ys, &Zs, &Xm, &Ym, &Zm);CHKERRQ(ierr);
+  ierr = DMDAGetNonOverlappingRegion(dm, &xs, &ys, &zs, &xm, &ym, &zm);CHKERRQ(ierr);
+  if (!xm || !ym || !zm) {xs = Xs; xm = Xm; ys = Ys; ym = Ym; zs = Zs; zm = Zm;}
+
+  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x1, Xs, xs, &pXs, &pxs, Xm, xm, &pXm, &pxm, 0.0, &cxs, 1.0, &cxe);CHKERRQ(ierr);
+  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x2, Ys, ys, &pYs, &pys, Ym, ym, &pYm, &pym, 0.0, &cys, 1.0, &cye);CHKERRQ(ierr);
+  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x4, Zs, zs, &pZs, &pzs, Zm, zm, &pZm, &pzm, 0.0, &czs, 1.0, &cze);CHKERRQ(ierr);
+  ierr = DMDASetSizes(*patch, pXm, pYm, pZm);CHKERRQ(ierr);
+  ierr = DMDASetNonOverlappingRegion(*patch, pxs, pys, pzs, pxm, pym, pzm);CHKERRQ(ierr);
   ierr = DMCopyDMSNES(dm, *patch);CHKERRQ(ierr);
   ierr = DMSetUp(*patch);CHKERRQ(ierr);
-  /*   Create scatter from coarse global vector to patch local vector */
-  N    = pxm*pym*pzm;
+  /*   Create scatter from coarse global vector to patch local (interior+buffer) vector */
+  N    = pXm*pYm*pZm;
   ierr = PetscMalloc1(N, &idx);CHKERRQ(ierr);
   ierr = PetscMalloc1(N, &gidx);CHKERRQ(ierr);
   ierr = DMGetGlobalVector(dm, &gv);CHKERRQ(ierr);
   ierr = DMGetLocalVector(*patch, &lv);CHKERRQ(ierr);
-  for (k = pzs; k < pzs+pzm; ++k) {
-    for (j = pys; j < pys+pym; ++j) {
-      for (i = pxs; i < pxs+pxm; ++i) {
-        const PetscInt lo = ((k - pzs)*pym + (j - pys))*pxm + (i - pxs);
-        const PetscInt go = (k*ym + j)*xm + i;
+  for (k = pZs; k < pZs+pZm; ++k) {
+    for (j = pYs; j < pYs+pYm; ++j) {
+      for (i = pXs; i < pXs+pXm; ++i) {
+        const PetscInt lo = ((k - pZs)*pYm + (j - pYs))*pXm + (i - pXs);
+        const PetscInt go = (k*Ym + j)*Xm + i;
 
         idx[lo]  = lo;
         gidx[lo] = go;
