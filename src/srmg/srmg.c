@@ -126,12 +126,13 @@ PetscErrorCode SNESSRMGGetBounds_Static(PetscInt quadrant, PetscInt buffer, Pets
 static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, PetscInt buffer, VecScatter *scPatch, DM *patch)
 {
   DMDAStencilType stencil_type;
-  Vec             gv, lv;
+  Vec             coords, gv, lv;
   IS              is, gis;
   PetscInt        dim, dof, s, N, *idx, *gidx, i, j, k;
   PetscInt        xs,  xm,  ys,  ym,  zs,  zm,  Xs,  Xm,  Ys,  Ym,  Zs,  Zm;
   PetscInt        pxs, pxm, pys, pym, pzs, pzm, pXs, pXm, pYs, pYm, pZs, pZm;
-  PetscReal       cxs, cxe, cys, cye, czs, cze;
+  PetscReal       cxs = 0.0, cxe = 1.0, cys = 0.0, cye = 1.0, czs = 0.0, cze = 1.0;
+  PetscReal       pcxs, pcxe, pcys, pcye, pczs, pcze;
   MPI_Comm        comm;
   PetscErrorCode  ierr;
 
@@ -152,10 +153,9 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
   ierr = DMDAGetCorners(dm, &Xs, &Ys, &Zs, &Xm, &Ym, &Zm);CHKERRQ(ierr);
   ierr = DMDAGetNonOverlappingRegion(dm, &xs, &ys, &zs, &xm, &ym, &zm);CHKERRQ(ierr);
   if (!xm || !ym || !zm) {xs = Xs; xm = Xm; ys = Ys; ym = Ym; zs = Zs; zm = Zm;}
-
-  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x1, Xs, xs, &pXs, &pxs, Xm, xm, &pXm, &pxm, 0.0, &cxs, 1.0, &cxe);CHKERRQ(ierr);
-  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x2, Ys, ys, &pYs, &pys, Ym, ym, &pYm, &pym, 0.0, &cys, 1.0, &cye);CHKERRQ(ierr);
-  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x4, Zs, zs, &pZs, &pzs, Zm, zm, &pZm, &pzm, 0.0, &czs, 1.0, &cze);CHKERRQ(ierr);
+  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x1, Xs, xs, &pXs, &pxs, Xm, xm, &pXm, &pxm, cxs, &pcxs, cxe, &pcxe);CHKERRQ(ierr);
+  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x2, Ys, ys, &pYs, &pys, Ym, ym, &pYm, &pym, cys, &pcys, cye, &pcye);CHKERRQ(ierr);
+  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x4, Zs, zs, &pZs, &pzs, Zm, zm, &pZm, &pzm, czs, &pczs, cze, &pcze);CHKERRQ(ierr);
   ierr = DMDASetSizes(*patch, pXm, pYm, pZm);CHKERRQ(ierr);
   ierr = DMDASetNonOverlappingRegion(*patch, pxs, pys, pzs, pxm, pym, pzm);CHKERRQ(ierr);
   ierr = DMCopyDMSNES(dm, *patch);CHKERRQ(ierr);
@@ -185,7 +185,7 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
   ierr = DMRestoreGlobalVector(dm, &gv);CHKERRQ(ierr);
   ierr = DMRestoreLocalVector(*patch, &lv);CHKERRQ(ierr);
   /* Scatter in coordinates */
-  ierr = DMDASetUniformCoordinates(*patch, cxs, cxe, cys, cye, czs, cze);CHKERRQ(ierr);
+  ierr = DMDASetUniformCoordinates(*patch, pcxs, pcxe, pcys, pcye, pczs, pcze);CHKERRQ(ierr);
   ierr = DMViewFromOptions(*patch, NULL, "-dm_view");CHKERRQ(ierr);
   dm->setupcalled = PETSC_TRUE;
   PetscFunctionReturn(0);
