@@ -128,8 +128,8 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
   DMDAStencilType stencil_type;
   Vec             coords, gv, lv;
   IS              is, gis;
-  PetscInt        dim, dof, s, N, *idx, *gidx, i, j, k;
-  PetscInt        xs,  xm,  ys,  ym,  zs,  zm,  Xs,  Xm,  Ys,  Ym,  Zs,  Zm;
+  PetscInt        debug = 0, dim, dof, s, N, *idx, *gidx, i, j, k;
+  PetscInt        xs,  xm,  ys,  ym,  zs,  zm,  Xs,  Xm, Xo,  Ys,  Ym, Yo,  Zs,  Zm, Zo;
   PetscInt        pxs, pxm, pys, pym, pzs, pzm, pXs, pXm, pYs, pYm, pZs, pZm;
   PetscReal       cxs = 0.0, cxe = 1.0, cys = 0.0, cye = 1.0, czs = 0.0, cze = 1.0;
   PetscReal       pcxs, pcxe, pcys, pcye, pczs, pcze;
@@ -139,6 +139,7 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
   PetscFunctionBegin;
   ierr = PetscObjectGetComm((PetscObject) dm, &comm);CHKERRQ(ierr);
   if (buffer < 0) SETERRQ1(comm, PETSC_ERR_SUP, "Buffer size must be non-negative, not %d", buffer);
+  ierr = PetscOptionsGetInt(NULL, NULL, "-snes_srmg_patch_debug", &debug, NULL);CHKERRQ(ierr);
   ierr = DMDACreate(PETSC_COMM_SELF, patch);CHKERRQ(ierr);
   ierr = DMAppendOptionsPrefix(*patch, "srmg_patch_");CHKERRQ(ierr);
   ierr = DMGetDimension(dm, &dim);CHKERRQ(ierr);
@@ -151,13 +152,25 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
   ierr = DMDASetStencilWidth(*patch, s);CHKERRQ(ierr);
   /* Determine patch */
   ierr = DMDAGetCorners(dm, &Xs, &Ys, &Zs, &Xm, &Ym, &Zm);CHKERRQ(ierr);
+  ierr = DMDAGetOverlap(dm, &Xo, &Yo, &Zo);CHKERRQ(ierr);
+  Xs += Xo; Ys += Yo; Zs += Zo;
   ierr = DMDAGetNonOverlappingRegion(dm, &xs, &ys, &zs, &xm, &ym, &zm);CHKERRQ(ierr);
   if (!xm || !ym || !zm) {xs = Xs; xm = Xm; ys = Ys; ym = Ym; zs = Zs; zm = Zm;}
+  ierr = DMGetCoordinates(dm, &coords);CHKERRQ(ierr);
+  if (dim > 0) {ierr = VecStrideMin(coords, 0, NULL, &cxs);CHKERRQ(ierr);ierr = VecStrideMax(coords, 0, NULL, &cxe);CHKERRQ(ierr);}
+  if (dim > 1) {ierr = VecStrideMin(coords, 1, NULL, &cys);CHKERRQ(ierr);ierr = VecStrideMax(coords, 1, NULL, &cye);CHKERRQ(ierr);}
+  if (dim > 2) {ierr = VecStrideMin(coords, 2, NULL, &czs);CHKERRQ(ierr);ierr = VecStrideMax(coords, 2, NULL, &cze);CHKERRQ(ierr);}
   ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x1, Xs, xs, &pXs, &pxs, Xm, xm, &pXm, &pxm, cxs, &pcxs, cxe, &pcxe);CHKERRQ(ierr);
   ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x2, Ys, ys, &pYs, &pys, Ym, ym, &pYm, &pym, cys, &pcys, cye, &pcye);CHKERRQ(ierr);
   ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x4, Zs, zs, &pZs, &pzs, Zm, zm, &pZm, &pzm, czs, &pczs, cze, &pcze);CHKERRQ(ierr);
+  if (debug) {
+    ierr = PetscPrintf(PETSC_COMM_SELF, "X: [%d, %d) [%d, %d) (%g, %g)\n", pxs, pxs+pxm, pXs, pXs+pXm, pcxs, pcxe);CHKERRQ(ierr);
+    ierr = PetscPrintf(PETSC_COMM_SELF, "Y: [%d, %d) [%d, %d) (%g, %g)\n", pys, pys+pym, pYs, pYs+pYm, pcys, pcye);CHKERRQ(ierr);
+    ierr = PetscPrintf(PETSC_COMM_SELF, "Z: [%d, %d) [%d, %d) (%g, %g)\n", pzs, pzs+pzm, pZs, pZs+pZm, pczs, pcze);CHKERRQ(ierr);
+  }
   ierr = DMDASetSizes(*patch, pXm, pYm, pZm);CHKERRQ(ierr);
   ierr = DMDASetNonOverlappingRegion(*patch, pxs, pys, pzs, pxm, pym, pzm);CHKERRQ(ierr);
+  ierr = DMDASetOverlap(*patch, pXs, pYs, pZs);CHKERRQ(ierr);
   ierr = DMCopyDMSNES(dm, *patch);CHKERRQ(ierr);
   ierr = DMSetUp(*patch);CHKERRQ(ierr);
   /*   Create scatter from coarse global vector to patch local (interior+buffer) vector */
