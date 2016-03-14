@@ -532,11 +532,13 @@ static PetscErrorCode SNESSolve_SRMG(SNES snes)
   ierr = DMGetDimension(dm, &dim);CHKERRQ(ierr);
   for (d = 0; d < dim; ++d) numQuadrants *= 2;
   for (q = 0; q < numQuadrants; ++q) {
-    DM  dmPatch;
-    Vec bcv;
+    DM       dmPatch;
+    Vec      bcv;
+    PetscInt buffer = 0;
 
+    ierr = PetscOptionsGetInt(NULL, NULL, "-buffer_size", &buffer, NULL);CHKERRQ(ierr);
     ierr = SNESReset(sr->solPatch);CHKERRQ(ierr);
-    ierr = PCSRMGCreatePatch_Static(dm, q, 0, &scPatch, &dmPatch);CHKERRQ(ierr);
+    ierr = SNESSRMGCreatePatch_Static(dm, q, buffer, &scPatch, &dmPatch);CHKERRQ(ierr);
     ierr = SNESSetDM(sr->solPatch, dmPatch);CHKERRQ(ierr);
     if (sr->setfromopts) {ierr = SNESSetFromOptions(sr->solPatch);CHKERRQ(ierr);}
     ierr = DMGetGlobalVector(dmPatch, &uPatch);CHKERRQ(ierr);
