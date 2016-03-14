@@ -532,54 +532,67 @@ static PetscErrorCode SNESSetUp_SRMG(SNES snes)
 }
 
 #undef __FUNCT__
+#define __FUNCT__ "SNESSRMGProcessLevel_Static"
+PetscErrorCode SNESSRMGProcessLevel_Static(SNES_SRMG *sr, DM dmCoarse, Vec solCoarse, PetscInt remainingLevels, PetscInt buffer)
+{
+  PetscInt       numQuadrants = 1, q, dim, d;
+  PetscErrorCode ierr;
+
+  PetscFunctionBegin;
+  if (!remainingLevels) PetscFunctionReturn(0);
+  ierr = DMGetDimension(dmCoarse, &dim);CHKERRQ(ierr);
+  for (d = 0; d < dim; ++d) numQuadrants *= 2;
+  for (q = 0; q < numQuadrants; ++q) {
+    DM         dmPatch;
+    VecScatter scPatch;
+    Vec        uPatch, bcPatch;
+
+    ierr = SNESReset(sr->solPatch);CHKERRQ(ierr);
+    ierr = SNESSRMGCreatePatch_Static(dmCoarse, q, buffer, &scPatch, &dmPatch);CHKERRQ(ierr);
+    ierr = SNESSetDM(sr->solPatch, dmPatch);CHKERRQ(ierr);
+    if (sr->setfromopts) {ierr = SNESSetFromOptions(sr->solPatch);CHKERRQ(ierr);}
+    ierr = DMGetGlobalVector(dmPatch, &uPatch);CHKERRQ(ierr);
+    /* TODO Must interpolate rhs and solution vector */
+    ierr = VecScatterBegin(scPatch, solCoarse, uPatch, INSERT_VALUES, SCATTER_FORWARD);CHKERRQ(ierr);
+    ierr = VecScatterEnd(scPatch, solCoarse, uPatch, INSERT_VALUES, SCATTER_FORWARD);CHKERRQ(ierr);
+    ierr = VecViewFromOptions(uPatch, (PetscObject) sr->solPatch, "-input_view");CHKERRQ(ierr);
+    /* Setup patch boundary conditions */
+    ierr = DMGetNamedLocalVector(dmPatch, "_petsc_boundary_conditions_", &bcPatch);CHKERRQ(ierr);
+    ierr = VecCopy(uPatch, bcPatch);CHKERRQ(ierr);
+    ierr = DMRestoreNamedLocalVector(dmPatch, "_petsc_boundary_conditions_", &bcPatch);CHKERRQ(ierr);
+    ierr = SNESSolve(sr->solPatch, NULL, uPatch);CHKERRQ(ierr);
+    /* Recurse onto finer level */
+    /* TODO Determine buffer for fine level */
+    ierr = SNESSRMGProcessLevel_Static(sr, dmPatch, uPatch, remainingLevels-1, buffer);CHKERRQ(ierr);
+    /* TODO Process patch solution */
+    ierr = VecScatterBegin(scPatch, uPatch, solCoarse, INSERT_VALUES, SCATTER_REVERSE);CHKERRQ(ierr);
+    ierr = VecScatterEnd(scPatch, uPatch, solCoarse, INSERT_VALUES, SCATTER_REVERSE);CHKERRQ(ierr);
+    /* TODO Pass up patch solver convergence */
+    /* Cleanup */
+    ierr = DMRestoreGlobalVector(dmPatch, &uPatch);CHKERRQ(ierr);
+    ierr = VecScatterDestroy(&scPatch);CHKERRQ(ierr);
+    ierr = DMDestroy(&dmPatch);CHKERRQ(ierr);
+  }
+  PetscFunctionReturn(0);
+}
+
+#undef __FUNCT__
 #define __FUNCT__ "SNESSolve_SRMG"
 static PetscErrorCode SNESSolve_SRMG(SNES snes)
 {
   SNES_SRMG     *sr = (SNES_SRMG *) snes->data;
-  DM             dm;
-  Vec            oldsol, uPatch;
-  VecScatter     scPatch;
-  PetscInt       numQuadrants = 1, q, dim, d;
+  DM             dmCoarse;
+  PetscInt       buffer = 0;
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
   if (snes->xl || snes->xu || snes->ops->computevariablebounds) SETERRQ1(PetscObjectComm((PetscObject) snes), PETSC_ERR_ARG_WRONGSTATE, "SNES solver %s does not support bounds", ((PetscObject) snes)->type_name);
   ierr = PetscCitationsRegister(SRMGCitation, &SRMGcite);CHKERRQ(ierr);
+  ierr = PetscOptionsGetInt(NULL, NULL, "-buffer_size", &buffer, NULL);CHKERRQ(ierr);
 
-  ierr = VecDuplicate(snes->vec_sol, &oldsol);CHKERRQ(ierr);
-  ierr = VecCopy(snes->vec_sol, oldsol);CHKERRQ(ierr);
   ierr = SNESSolve(sr->solCoarse, snes->vec_rhs, snes->vec_sol);CHKERRQ(ierr);
-  ierr = SNESGetDM(sr->solCoarse, &dm);CHKERRQ(ierr);
-  ierr = DMGetDimension(dm, &dim);CHKERRQ(ierr);
-  for (d = 0; d < dim; ++d) numQuadrants *= 2;
-  for (q = 0; q < numQuadrants; ++q) {
-    DM       dmPatch;
-    Vec      bcv;
-    PetscInt buffer = 0;
-
-    ierr = PetscOptionsGetInt(NULL, NULL, "-buffer_size", &buffer, NULL);CHKERRQ(ierr);
-    ierr = SNESReset(sr->solPatch);CHKERRQ(ierr);
-    ierr = SNESSRMGCreatePatch_Static(dm, q, buffer, &scPatch, &dmPatch);CHKERRQ(ierr);
-    ierr = SNESSetDM(sr->solPatch, dmPatch);CHKERRQ(ierr);
-    if (sr->setfromopts) {ierr = SNESSetFromOptions(sr->solPatch);CHKERRQ(ierr);}
-    ierr = DMGetGlobalVector(dmPatch, &uPatch);CHKERRQ(ierr);
-    /* TODO Must interpolate rhs and solution vector */
-    ierr = VecScatterBegin(scPatch, snes->vec_sol, uPatch, INSERT_VALUES, SCATTER_FORWARD);CHKERRQ(ierr);
-    ierr = VecScatterEnd(scPatch, snes->vec_sol, uPatch, INSERT_VALUES, SCATTER_FORWARD);CHKERRQ(ierr);
-    ierr = VecViewFromOptions(uPatch, (PetscObject) sr->solPatch, "-sol_view");CHKERRQ(ierr);
-    /* Setup patch boundary conditions */
-    ierr = DMGetNamedLocalVector(dmPatch, "_petsc_boundary_conditions_", &bcv);CHKERRQ(ierr);
-    ierr = VecCopy(uPatch, bcv);CHKERRQ(ierr);
-    ierr = DMRestoreNamedLocalVector(dmPatch, "_petsc_boundary_conditions_", &bcv);CHKERRQ(ierr);
-    ierr = SNESSolve(sr->solPatch, NULL, uPatch);CHKERRQ(ierr);
-    /* TODO Process patch solution */
-    ierr = VecScatterBegin(scPatch, uPatch, snes->vec_sol, INSERT_VALUES, SCATTER_REVERSE);CHKERRQ(ierr);
-    ierr = VecScatterEnd(scPatch, uPatch, snes->vec_sol, INSERT_VALUES, SCATTER_REVERSE);CHKERRQ(ierr);
-    ierr = DMRestoreGlobalVector(dmPatch, &uPatch);CHKERRQ(ierr);
-    ierr = VecScatterDestroy(&scPatch);CHKERRQ(ierr);
-    ierr = DMDestroy(&dmPatch);CHKERRQ(ierr);
-  }
-  ierr = VecDestroy(&oldsol);CHKERRQ(ierr);
+  ierr = SNESGetDM(sr->solCoarse, &dmCoarse);CHKERRQ(ierr);
+  ierr = SNESSRMGProcessLevel_Static(sr, dmCoarse, snes->vec_sol, sr->numLevels, buffer);CHKERRQ(ierr);
   {
     SNESConvergedReason reason;
 
