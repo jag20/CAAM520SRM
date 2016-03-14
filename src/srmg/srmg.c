@@ -116,7 +116,7 @@ PetscErrorCode SNESSRMGGetBounds_Static(PetscInt quadrant, PetscInt buffer, Pets
     *pm  = (m+1)/2;
     *pM  = (*ps-*pS) + PetscMin(*pm + buffer, S+M - *ps);
     *pcs = cs;
-    *pce = cs + (m > 1 ? ((*pS + *pM)-1)*(ce-cs)/(M-1) : ce);
+    *pce = cs + (m > 1 ? ((*pM)-1)*(ce-cs)/(M-1) : ce);
   }
   PetscFunctionReturn(0);
 }
