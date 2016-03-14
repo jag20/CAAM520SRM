@@ -127,7 +127,6 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
 {
   DMDAStencilType stencil_type;
   Vec             gv, lv;
-  VecScatter      gtol;
   IS              is, gis;
   PetscInt        dim, dof, s, N, *idx, *gidx, i, j, k;
   PetscInt        xs,  xm,  ys,  ym,  zs,  zm,  Xs,  Xm,  Ys,  Ym,  Zs,  Zm;
@@ -621,7 +620,6 @@ static PetscErrorCode SNESDestroy_SRMG(SNES snes)
 static PetscErrorCode SNESSetFromOptions_SRMG(PetscOptionItems *PetscOptionsObject, SNES snes)
 {
   SNES_SRMG     *sr = (SNES_SRMG *) snes->data;
-  PetscBool      flg;
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
@@ -729,8 +727,7 @@ PetscErrorCode SRMGInitializePackage()
 @*/
 PetscErrorCode SNESSRMGSetNumLevels(SNES snes, PetscInt n)
 {
-  SNES_SRMG     *sr = (SNES_SRMG *) snes->data;
-  PetscErrorCode ierr;
+  SNES_SRMG *sr = (SNES_SRMG *) snes->data;
 
   PetscFunctionBegin;
   PetscValidHeaderSpecific(snes, SNES_CLASSID, 1);
@@ -759,8 +756,7 @@ PetscErrorCode SNESSRMGSetNumLevels(SNES snes, PetscInt n)
 @*/
 PetscErrorCode SNESSRMGGetNumLevels(SNES snes, PetscInt *n)
 {
-  SNES_SRMG       *sr = (SNES_SRMG *) snes->data;
-  PetscErrorCode ierr;
+  SNES_SRMG *sr = (SNES_SRMG *) snes->data;
 
   PetscFunctionBegin;
   PetscValidHeaderSpecific(snes, SNES_CLASSID, 1);
