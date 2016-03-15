@@ -760,10 +760,12 @@ PetscErrorCode SNESView_SRMG(SNES snes, PetscViewer viewer)
     ierr = PetscViewerASCIIPushTab(viewer);CHKERRQ(ierr);
     ierr = SNESView(sr->solCoarse, viewer);CHKERRQ(ierr);
     ierr = PetscViewerASCIIPopTab(viewer);CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPrintf(viewer, "SRMG Patch grid solver ----------------------------------------\n");CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPushTab(viewer);CHKERRQ(ierr);
-    ierr = SNESView(sr->solPatch, viewer);CHKERRQ(ierr);
-    ierr = PetscViewerASCIIPopTab(viewer);CHKERRQ(ierr);
+    if (sr->numLevels) {
+      ierr = PetscViewerASCIIPrintf(viewer, "SRMG Patch grid solver ----------------------------------------\n");CHKERRQ(ierr);
+      ierr = PetscViewerASCIIPushTab(viewer);CHKERRQ(ierr);
+      ierr = SNESView(sr->solPatch, viewer);CHKERRQ(ierr);
+      ierr = PetscViewerASCIIPopTab(viewer);CHKERRQ(ierr);
+    }
   }
   PetscFunctionReturn(0);
 }
