@@ -236,6 +236,105 @@ static PetscErrorCode SNESSetUp_SRMG(SNES snes)
   PetscFunctionReturn(0);
 }
 
+typedef struct {
+  PetscInt  n, bn;
+  PetscReal l1b,  l1;  /* Error in the $\ell_1$ norm on the full patch and the interior */
+  PetscReal l2b,  l2;  /* Error in the $\ell_2$ norm on the full patch and the interior */
+  PetscReal infb, inf; /* Error in the $\ell_\infty$ norm on the full patch and the interior */
+  PetscErrorCode (*exact)(const PetscReal[], PetscScalar *, void *);
+} ErrorCtx;
+
+#undef __FUNCT__
+#define __FUNCT__ "ExactSolution1_Static"
+static PetscErrorCode ExactSolution1_Static(const PetscReal x[], PetscScalar *u, void *ctx)
+{
+  PetscFunctionBegin;
+  *u = x[0]*(1.0 - x[0])*x[1]*(1.0 - x[1]);
+  PetscFunctionReturn(0);
+}
+
+#undef __FUNCT__
+#define __FUNCT__ "ExactSolution2_Static"
+static PetscErrorCode ExactSolution2_Static(const PetscReal x[], PetscScalar *u, void *ctx)
+{
+  PetscFunctionBegin;
+  *u = PetscSinReal(PETSC_PI*x[0])*PetscSinReal(PETSC_PI*x[1]);
+  PetscFunctionReturn(0);
+}
+
+#undef __FUNCT__
+#define __FUNCT__ "SNESSRMGFunctionalCompute_Error"
+PetscErrorCode SNESSRMGFunctionalCompute_Error(SNES snes, DM dmPatch, Vec uPatch, DM dmCoarse, Vec solCoarse, void *ctx)
+{
+  ErrorCtx      *e = (ErrorCtx *) ctx;
+  DM             cdm;
+  Vec            coordinates;
+  DMDACoor2d   **coords;
+  PetscScalar  **u, ue;
+  PetscReal      x[3];
+  PetscInt       xs, xm, xo, ys, ym, yo;
+  PetscInt       xsi, xmi, ysi, ymi;
+  PetscInt       i, j;
+  PetscErrorCode ierr;
+
+  PetscFunctionBegin;
+  ierr = DMDAGetCorners(dmPatch, &xs, &ys, NULL, &xm, &ym, NULL);CHKERRQ(ierr);
+  ierr = DMDAGetOverlap(dmPatch, &xo, &yo, NULL);CHKERRQ(ierr);
+  ierr = DMDAGetNonOverlappingRegion(dmPatch, &xsi, &ysi, NULL, &xmi, &ymi, NULL);CHKERRQ(ierr);
+  xsi -= xo; ysi -= yo;
+  ierr = DMGetCoordinateDM(dmPatch, &cdm);CHKERRQ(ierr);
+  ierr = DMGetCoordinates(dmPatch, &coordinates);CHKERRQ(ierr);
+  ierr = DMDAVecGetArray(cdm, coordinates, &coords);CHKERRQ(ierr);
+  ierr = DMDAVecGetArray(dmPatch, uPatch, &u);CHKERRQ(ierr);
+  for (j = ys; j < ys+ym; ++j) {
+    for (i = xs; i < xs+xm; ++i) {
+      PetscReal diff;
+
+      x[0] = PetscRealPart(coords[j][i].x); x[1] = PetscRealPart(coords[j][i].y);
+      ierr = (*e->exact)(x, &ue, ctx);CHKERRQ(ierr);
+      diff = PetscAbsScalar(u[j][i] - ue);
+      e->l1b  += diff;
+      e->l2b  += diff*diff;
+      e->infb  = PetscMax(e->infb, diff);
+      ++e->bn;
+      if (i >= xsi && i < xsi+xmi && j >= ysi && j < ysi+ymi) {
+        /* Only include left and bottom boundaries of the patch at the boundary of the mesh */
+        if ((i > xsi || !xo) && (j > ysi || !yo)) {
+          ++e->n;
+          e->l1  += diff;
+          e->l2  += diff*diff;
+          e->inf  = PetscMax(e->inf, diff);
+        }
+      }
+    }
+  }
+  ierr = DMDAVecRestoreArray(dmPatch, uPatch, &u);CHKERRQ(ierr);
+  ierr = DMDAVecRestoreArray(cdm, coordinates, &coords);CHKERRQ(ierr);
+  PetscFunctionReturn(0);
+}
+
+#undef __FUNCT__
+#define __FUNCT__ "SNESSRMGFunctionalView_Error"
+PetscErrorCode SNESSRMGFunctionalView_Error(SNES snes, PetscInt level, void *ctx)
+{
+  SNES_SRMG     *sr = (SNES_SRMG *) snes->data;
+  ErrorCtx      *e  = (ErrorCtx *) ctx;
+  DM             dm;
+  PetscInt       M, N, P, Nt, f = PetscPowInt(sr->r, level);
+  PetscErrorCode ierr;
+
+  PetscFunctionBegin;
+  ierr = SNESGetDM(sr->solCoarse, &dm);CHKERRQ(ierr);
+  ierr = DMDAGetInfo(dm, 0, &M, &N, &P, 0,0,0,0,0,0,0,0,0);CHKERRQ(ierr);
+  M    = f*(M-1) + 1;
+  N    = f*(N-1) + 1;
+  P    = f*(P-1) + 1;
+  Nt   = M*N*P;
+  ierr = PetscPrintf(PetscObjectComm((PetscObject) snes), "L: %D N: %D n: %D error l2 %g inf %g\n", level, Nt, e->n, (double) PetscSqrtReal(e->l2)/Nt, (double) e->inf);CHKERRQ(ierr);
+  ierr = PetscPrintf(PetscObjectComm((PetscObject) snes), "L: %D Buffered error n: %D l2 %g inf %g\n", level, e->bn, (double) PetscSqrtReal(e->l2b)/Nt, (double) e->infb);CHKERRQ(ierr);
+  PetscFunctionReturn(0);
+}
+
 #undef __FUNCT__
 #define __FUNCT__ "SNESSRMGInjectSolution_Static"
 PetscErrorCode SNESSRMGInjectSolution_Static(SNES snes, DM dmPatch, Vec uPatch, DM dmCoarse, Vec solCoarse, void *ctx)
@@ -276,11 +375,22 @@ PetscErrorCode SNESSRMGInjectSolution_Static(SNES snes, DM dmPatch, Vec uPatch, 
 PetscErrorCode SNESSRMGProcessLevel_Static(SNES snes, DM dmCoarse, Vec solCoarse, PetscInt remainingLevels, PetscInt buffer)
 {
   SNES_SRMG     *sr = (SNES_SRMG *) snes->data;
+  ErrorCtx       ectx;
   PetscInt       numQuadrants = 1, q, dim, d;
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
   if (!remainingLevels) PetscFunctionReturn(0);
+  /* TODO This should be passed in by the user when the functional is constructed, I think functionals should indicate the level on which they work and have a view function */
+  if (1) {
+    PetscInt mms;
+
+    ectx.n = ectx.bn = 0;
+    ectx.l1 = ectx.l1b = ectx.l2 = ectx.l2b = ectx.inf = ectx.infb = 0.0;
+    ierr = PetscOptionsGetInt(NULL, NULL, "-mms", &mms, NULL);CHKERRQ(ierr);
+    if (mms == 1) ectx.exact = ExactSolution1_Static;
+    if (mms == 2) ectx.exact = ExactSolution2_Static;
+  }
   ierr = DMGetDimension(dmCoarse, &dim);CHKERRQ(ierr);
   for (d = 0; d < dim; ++d) numQuadrants *= 2;
   for (q = 0; q < numQuadrants; ++q) {
@@ -305,6 +415,7 @@ PetscErrorCode SNESSRMGProcessLevel_Static(SNES snes, DM dmCoarse, Vec solCoarse
     /* TODO Determine buffer for fine level */
     ierr = SNESSRMGProcessLevel_Static(snes, dmPatch, uPatch, remainingLevels-1, buffer);CHKERRQ(ierr);
     /* TODO Process patch solution: We can use the SNES monitor setup to manage functionals */
+    ierr = SNESSRMGFunctionalCompute_Error(snes, dmPatch, uPatch, dmCoarse, solCoarse, &ectx);CHKERRQ(ierr);
     if (sr->inject) {ierr = SNESSRMGInjectSolution_Static(snes, dmPatch, uPatch, dmCoarse, solCoarse, NULL);CHKERRQ(ierr);}
     /* TODO Pass up patch solver convergence */
     /* Cleanup */
@@ -312,6 +423,7 @@ PetscErrorCode SNESSRMGProcessLevel_Static(SNES snes, DM dmCoarse, Vec solCoarse
     ierr = MatDestroy(&interp);CHKERRQ(ierr);
     ierr = DMDestroy(&dmPatch);CHKERRQ(ierr);
   }
+  ierr = SNESSRMGFunctionalView_Error(snes, sr->numLevels - remainingLevels + 1, &ectx);CHKERRQ(ierr);
   PetscFunctionReturn(0);
 }
 
