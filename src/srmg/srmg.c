@@ -123,12 +123,12 @@ PetscErrorCode SNESSRMGGetBounds_Static(PetscInt quadrant, PetscInt buffer, Pets
 
 #undef __FUNCT__
 #define __FUNCT__ "SNESSRMGCreatePatch_Static"
-static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, PetscInt buffer, VecScatter *scPatch, DM *patch)
+static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, PetscInt r, PetscInt buffer, Mat *interp, DM *patch)
 {
   DMDAStencilType stencil_type;
-  Vec             coords, gv, lv;
-  IS              is, gis;
-  PetscInt        debug = 0, dim, dof, s, N, *idx, *gidx, i, j, k;
+  Mat             in;
+  Vec             coords;
+  PetscInt        debug = 0, dim, dof, s, i, j, k, *dnz;
   PetscInt        xs,  xm,  ys,  ym,  zs,  zm,  Xs,  Xm, Xo,  Ys,  Ym, Yo,  Zs,  Zm, Zo;
   PetscInt        pxs, pxm, pys, pym, pzs, pzm, pXs, pXm, pYs, pYm, pZs, pZm;
   PetscReal       cxs = 0.0, cxe = 1.0, cys = 0.0, cye = 1.0, czs = 0.0, cze = 1.0;
@@ -168,35 +168,91 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
     ierr = PetscPrintf(PETSC_COMM_SELF, "Y: [%d, %d) [%d, %d) (%g, %g)\n", pys, pys+pym, pYs, pYs+pYm, pcys, pcye);CHKERRQ(ierr);
     ierr = PetscPrintf(PETSC_COMM_SELF, "Z: [%d, %d) [%d, %d) (%g, %g)\n", pzs, pzs+pzm, pZs, pZs+pZm, pczs, pcze);CHKERRQ(ierr);
   }
+  /* Refine grid */
+  pXm  = r*(pXm - 1) + 1; pxm = r*(pxm - 1) + 1;
+  pYm  = r*(pYm - 1) + 1; pym = r*(pym - 1) + 1;
+  pZm  = r*(pZm - 1) + 1; pzm = r*(pzm - 1) + 1;
+  pXs  = r*pXs; pYs = r*pYs; pZs = r*pZs;
+  pxs  = r*pxs; pys = r*pys; pzs = r*pzs;
   ierr = DMDASetSizes(*patch, pXm, pYm, pZm);CHKERRQ(ierr);
   ierr = DMDASetNonOverlappingRegion(*patch, pxs, pys, pzs, pxm, pym, pzm);CHKERRQ(ierr);
   ierr = DMDASetOverlap(*patch, pXs, pYs, pZs);CHKERRQ(ierr);
   ierr = DMCopyDMSNES(dm, *patch);CHKERRQ(ierr);
   ierr = DMSetUp(*patch);CHKERRQ(ierr);
-  /*   Create scatter from coarse global vector to patch local (interior+buffer) vector */
-  N    = pXm*pYm*pZm;
-  ierr = PetscMalloc1(N, &idx);CHKERRQ(ierr);
-  ierr = PetscMalloc1(N, &gidx);CHKERRQ(ierr);
-  ierr = DMGetGlobalVector(dm, &gv);CHKERRQ(ierr);
-  ierr = DMGetLocalVector(*patch, &lv);CHKERRQ(ierr);
+  /*   Create interpolator from coarse global vector to patch local (interior+buffer) vector */
+  ierr = PetscCalloc1(Xm*Ym*Zm, &dnz);CHKERRQ(ierr);
+  ierr = MatCreate(PETSC_COMM_SELF, &in);CHKERRQ(ierr);
+  ierr = MatSetSizes(in, Xm*Ym*Zm, pXm*pYm*pZm, PETSC_DETERMINE, PETSC_DETERMINE);CHKERRQ(ierr);
+  ierr = MatSetType(in, MATAIJ);CHKERRQ(ierr);
+  for (k = pZs; k < pZs+pZm; ++k) {
+    for (j = pYs; j < pYs+pYm; ++j) {
+      for (i = pXs; i < pXs+pXm; ++i) {
+        const PetscInt go = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r -  Xs);
+        PetscInt       g[4];
+
+        if (i % r) {
+          if (j % r) {
+            g[0] = go;
+            g[1] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
+            g[2] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
+            g[3] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r+1 -  Xs);
+            dnz[g[0]]++; dnz[g[1]]++; dnz[g[2]]++; dnz[g[3]]++;
+          } else {
+            g[0] = go;  g[1] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
+            dnz[g[0]]++; dnz[g[1]]++;
+          }
+        } else {
+          if (j % r) {
+            g[0] = go;  g[1] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
+            dnz[g[0]]++; dnz[g[1]]++;
+          } else {
+            dnz[go]++;
+          }
+        }
+      }
+    }
+  }
+  ierr = MatXAIJSetPreallocation(in, 1, dnz, NULL, NULL, NULL);CHKERRQ(ierr);
+  ierr = MatSetUp(in);CHKERRQ(ierr);
   for (k = pZs; k < pZs+pZm; ++k) {
     for (j = pYs; j < pYs+pYm; ++j) {
       for (i = pXs; i < pXs+pXm; ++i) {
         const PetscInt lo = ((k - pZs)*pYm + (j - pYs))*pXm + (i - pXs);
-        const PetscInt go = ((k -  Zs)*Ym  + (j -  Ys))*Xm  + (i -  Xs);
+        const PetscInt go = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r -  Xs);
+        PetscInt       g[4];
+        PetscScalar    v[4];
 
-        idx[lo]  = lo;
-        gidx[lo] = go;
+        if (i % r) {
+          if (j % r) {
+            g[0] = go;
+            g[1] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
+            g[2] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
+            g[3] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r+1 -  Xs);
+            v[0] = 0.25; v[1] = 0.25; v[2] = 0.25; v[3] = 0.25;
+            ierr = MatSetValues(in, 4, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+          } else {
+            g[0] = go;  g[1] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
+            v[0] = 0.5; v[1] = 0.5;
+            ierr = MatSetValues(in, 2, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+          }
+        } else {
+          if (j % r) {
+            g[0] = go;  g[1] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
+            v[0] = 0.5; v[1] = 0.5;
+            ierr = MatSetValues(in, 2, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+          } else {
+            v[0] = 1.0;
+            ierr = MatSetValues(in, 1, &go, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+          }
+        }
       }
     }
   }
-  ierr = ISCreateBlock(PETSC_COMM_SELF, dof, N,  idx, PETSC_OWN_POINTER, &is);CHKERRQ(ierr);
-  ierr = ISCreateBlock(PETSC_COMM_SELF, dof, N, gidx, PETSC_OWN_POINTER, &gis);CHKERRQ(ierr);
-  ierr = VecScatterCreate(gv, gis, lv, is, scPatch);CHKERRQ(ierr);
-  ierr = ISDestroy(&is);CHKERRQ(ierr);
-  ierr = ISDestroy(&gis);CHKERRQ(ierr);
-  ierr = DMRestoreGlobalVector(dm, &gv);CHKERRQ(ierr);
-  ierr = DMRestoreLocalVector(*patch, &lv);CHKERRQ(ierr);
+  ierr = MatAssemblyBegin(in, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
+  ierr = MatAssemblyEnd(in, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
+  ierr = MatCreateMAIJ(in, dof, interp);CHKERRQ(ierr);
+  ierr = MatDestroy(&in);CHKERRQ(ierr);
+  ierr = PetscFree(dnz);CHKERRQ(ierr);
   /* Scatter in coordinates */
   ierr = DMDASetUniformCoordinates(*patch, pcxs, pcxe, pcys, pcye, pczs, pcze);CHKERRQ(ierr);
   ierr = DMViewFromOptions(*patch, NULL, "-dm_view");CHKERRQ(ierr);
@@ -544,29 +600,63 @@ static PetscErrorCode SNESSetUp_SRMG(SNES snes)
 }
 
 #undef __FUNCT__
+#define __FUNCT__ "SNESSRMGInjectSolution_Static"
+PetscErrorCode SNESSRMGInjectSolution_Static(DM dmPatch, Vec uPatch, PetscInt r, DM dmCoarse, Vec solCoarse)
+{
+  PetscScalar   *px, *x;
+  PetscInt       dof, pXs, pXm, pYs, pYm, pZs, pZm, Xs, Xm, Ys, Ym, Zs, Zm, Xo, Yo, Zo;
+  PetscInt       i, j, k, d;
+  PetscErrorCode ierr;
+
+  PetscFunctionBegin;
+  ierr = DMDAGetDof(dmPatch, &dof);CHKERRQ(ierr);
+  ierr = DMDAGetCorners(dmPatch, &pXs, &pYs, &pZs, &pXm, &pYm, &pZm);CHKERRQ(ierr);
+  ierr = DMDAGetOverlap(dmPatch, &Xo, &Yo, &Zo);CHKERRQ(ierr);
+  pXs += Xo; pYs += Yo; pZs += Zo;
+  ierr = DMDAGetCorners(dmCoarse, &Xs, &Ys, &Zs, &Xm, &Ym, &Zm);CHKERRQ(ierr);
+  ierr = DMDAGetOverlap(dmCoarse, &Xo, &Yo, &Zo);CHKERRQ(ierr);
+  Xs += Xo; Ys += Yo; Zs += Zo;
+  ierr = VecGetArray(uPatch, &px);CHKERRQ(ierr);
+  ierr = VecGetArray(solCoarse, &x);CHKERRQ(ierr);
+  for (k = pZs; k < pZs+pZm; ++k) {
+    for (j = pYs; j < pYs+pYm; ++j) {
+      for (i = pXs; i < pXs+pXm; ++i) {
+        const PetscInt lo = ((k - pZs)*pYm + (j - pYs))*pXm + (i - pXs);
+        const PetscInt go = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r -  Xs);
+
+        if (!(k%r) && !(j%r) && !(i%r)) for (d = 0; d < dof; ++d) x[go+d] = px[lo+d];
+      }
+    }
+  }
+  ierr = VecRestoreArray(uPatch, &px);CHKERRQ(ierr);
+  ierr = VecRestoreArray(solCoarse, &x);CHKERRQ(ierr);
+  PetscFunctionReturn(0);
+}
+
+#undef __FUNCT__
 #define __FUNCT__ "SNESSRMGProcessLevel_Static"
 PetscErrorCode SNESSRMGProcessLevel_Static(SNES_SRMG *sr, DM dmCoarse, Vec solCoarse, PetscInt remainingLevels, PetscInt buffer)
 {
-  PetscInt       numQuadrants = 1, q, dim, d;
+  PetscInt       numQuadrants = 1, r = 1, q, dim, d;
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
   if (!remainingLevels) PetscFunctionReturn(0);
+  ierr = PetscOptionsGetInt(NULL, NULL, "-refine_factor", &r, NULL);CHKERRQ(ierr);
   ierr = DMGetDimension(dmCoarse, &dim);CHKERRQ(ierr);
   for (d = 0; d < dim; ++d) numQuadrants *= 2;
   for (q = 0; q < numQuadrants; ++q) {
-    DM         dmPatch;
-    VecScatter scPatch;
-    Vec        uPatch, bcPatch;
+    DM  dmPatch;
+    Mat interp;
+    Vec uPatch, bcPatch;
 
     ierr = SNESReset(sr->solPatch);CHKERRQ(ierr);
-    ierr = SNESSRMGCreatePatch_Static(dmCoarse, q, buffer, &scPatch, &dmPatch);CHKERRQ(ierr);
+    ierr = SNESSRMGCreatePatch_Static(dmCoarse, q, r, buffer, &interp, &dmPatch);CHKERRQ(ierr);
     ierr = SNESSetDM(sr->solPatch, dmPatch);CHKERRQ(ierr);
     if (sr->setfromopts) {ierr = SNESSetFromOptions(sr->solPatch);CHKERRQ(ierr);}
     ierr = DMGetGlobalVector(dmPatch, &uPatch);CHKERRQ(ierr);
     /* TODO Must interpolate rhs and solution vector */
-    ierr = VecScatterBegin(scPatch, solCoarse, uPatch, INSERT_VALUES, SCATTER_FORWARD);CHKERRQ(ierr);
-    ierr = VecScatterEnd(scPatch, solCoarse, uPatch, INSERT_VALUES, SCATTER_FORWARD);CHKERRQ(ierr);
+    ierr = MatMultTranspose(interp, solCoarse, uPatch);CHKERRQ(ierr);
     ierr = VecViewFromOptions(uPatch, (PetscObject) sr->solPatch, "-input_view");CHKERRQ(ierr);
     /* Setup patch boundary conditions */
     ierr = DMGetNamedLocalVector(dmPatch, "_petsc_boundary_conditions_", &bcPatch);CHKERRQ(ierr);
@@ -577,12 +667,11 @@ PetscErrorCode SNESSRMGProcessLevel_Static(SNES_SRMG *sr, DM dmCoarse, Vec solCo
     /* TODO Determine buffer for fine level */
     ierr = SNESSRMGProcessLevel_Static(sr, dmPatch, uPatch, remainingLevels-1, buffer);CHKERRQ(ierr);
     /* TODO Process patch solution */
-    ierr = VecScatterBegin(scPatch, uPatch, solCoarse, INSERT_VALUES, SCATTER_REVERSE);CHKERRQ(ierr);
-    ierr = VecScatterEnd(scPatch, uPatch, solCoarse, INSERT_VALUES, SCATTER_REVERSE);CHKERRQ(ierr);
+    ierr = SNESSRMGInjectSolution_Static(dmPatch, uPatch, r, dmCoarse, solCoarse);CHKERRQ(ierr);
     /* TODO Pass up patch solver convergence */
     /* Cleanup */
     ierr = DMRestoreGlobalVector(dmPatch, &uPatch);CHKERRQ(ierr);
-    ierr = VecScatterDestroy(&scPatch);CHKERRQ(ierr);
+    ierr = MatDestroy(&interp);CHKERRQ(ierr);
     ierr = DMDestroy(&dmPatch);CHKERRQ(ierr);
   }
   PetscFunctionReturn(0);
