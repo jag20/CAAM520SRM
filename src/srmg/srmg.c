@@ -666,7 +666,7 @@ PetscErrorCode SNESView_SRMG(SNES snes, PetscViewer viewer)
   PetscFunctionBegin;
   ierr = PetscObjectTypeCompare((PetscObject) viewer, PETSCVIEWERASCII, &isascii);CHKERRQ(ierr);
   if (isascii) {
-    ierr = PetscViewerASCIIPrintf(viewer,"  SRMG with %D levels\n", sr->numLevels);CHKERRQ(ierr);}
+    ierr = PetscViewerASCIIPrintf(viewer,"  SRMG with %D levels\n", sr->numLevels);CHKERRQ(ierr);
     ierr = PetscViewerASCIIPrintf(viewer, "SRMG Coarse grid solver ----------------------------------------\n");CHKERRQ(ierr);
     ierr = PetscViewerASCIIPushTab(viewer);CHKERRQ(ierr);
     ierr = SNESView(sr->solCoarse, viewer);CHKERRQ(ierr);
