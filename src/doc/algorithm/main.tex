@@ -83,6 +83,30 @@ Cite Marcus Mohr and Achi Brandt. Can we somehow analyze $|\Phi_n(x, y)| < \epsi
 
 Ideally we'd like the sum of boundaries at each level needed to sum to some moderate amount. That way we need no communication when solving each level. 
 
+Consider an algorithm as follows
+
+\begin{itemize}
+\item Solve coarse grid
+\item Fix boundary of patch to include buffer. This boundary is accurate from frequency $n_0$ to $2n_0$. 
+\item Solve on patch and bound error by making buffer large enough
+\end{itemize}
+
+Let $l = 0$ refer to the coarsest grid.  Higher levels refer to patches of greater refinement. 
+
+The discretization error at each level is $C_D * \frac{1}{2^l n_0}^2$
+
+
+At level $l = 1$:
+$L = \frac{1}{2}$
+
+$|\Phi(x, y)| \leq \sum_{n=n_0}^{2n_0} \frac{4C * e^\frac{-n \pi d}{L}}{L} < n_0 *\frac{4C * e^\frac{-n_0 \pi d}{L}}{L} <  C_D * (\frac{1}{2 n_0})^2$
+
+$d > \frac{-ln(C_D) + ln(2) + 3 ln(n_0) + ln(4) + ln(C)}{2 n_0 \pi} $ 
+
+Note that we also have $d_l > \frac{(2l-1)ln(2) + ln(4C) + 3ln(n_0) - ln(C_D)}{n_0 \pi 2^{2l-1}}$
+
+
+
 
 %We can bound $|\Phi(x, y)|$ by $|\sum_{n=1}^{\infty}B_n| |\frac{e^{y}*(e^{2y} - 1)}{2}| \leq |\sum_{n=1}^{\infty}B_n | |\frac{e}{2} | |e^{2y}-1| = C|e^{2y}-1|$
 

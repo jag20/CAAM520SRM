@@ -1,0 +1,6 @@
+PYTHON = /Users/Idekia/anaconda/bin/python
+include ${PETSC_DIR}/lib/petsc/conf/variables
+
+SRMG_INCLUDE = -I/Users/Idekia/Documents/CAAM520/CAAM520SRM/include
+CFLAGS += ${SRMG_INCLUDE}
+include ../base.mk
