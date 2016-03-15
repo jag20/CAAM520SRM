@@ -487,7 +487,6 @@ PetscErrorCode PCSRMGGetType(PC pc, PCSRMGType *type)
 
 typedef struct {
   PetscBool setfromopts;
-  PetscBool fullspace;
   SNES      solCoarse;
   SNES      solPatch;
   PetscInt  numLevels;
@@ -667,8 +666,7 @@ PetscErrorCode SNESView_SRMG(SNES snes, PetscViewer viewer)
   PetscFunctionBegin;
   ierr = PetscObjectTypeCompare((PetscObject) viewer, PETSCVIEWERASCII, &isascii);CHKERRQ(ierr);
   if (isascii) {
-    if (sr->fullspace) {ierr = PetscViewerASCIIPrintf(viewer,"  SRMG with %D levels, storing the full space\n", sr->numLevels);CHKERRQ(ierr);}
-    else               {ierr = PetscViewerASCIIPrintf(viewer,"  SRMG with %D levels, storing only the patch space\n", sr->numLevels);CHKERRQ(ierr);}
+    ierr = PetscViewerASCIIPrintf(viewer,"  SRMG with %D levels\n", sr->numLevels);CHKERRQ(ierr);}
     ierr = PetscViewerASCIIPrintf(viewer, "SRMG Coarse grid solver ----------------------------------------\n");CHKERRQ(ierr);
     ierr = PetscViewerASCIIPushTab(viewer);CHKERRQ(ierr);
     ierr = SNESView(sr->solCoarse, viewer);CHKERRQ(ierr);
@@ -700,7 +698,6 @@ PETSC_EXTERN PetscErrorCode SNESCreate_SRMG(SNES snes)
   ierr = PetscNewLog(snes, &sr);CHKERRQ(ierr);
   snes->data = (void *) sr;
 
-  sr->fullspace   = PETSC_TRUE;
   sr->setfromopts = PETSC_FALSE;
   sr->solCoarse   = NULL;
   sr->numLevels   = 0;
