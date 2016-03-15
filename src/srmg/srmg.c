@@ -16,11 +16,11 @@ static const char SRMGCitation[] = \
   "  year    = {2016}\n}\n";
 
 typedef struct {
-  PetscBool setfromopts;
-  SNES      solCoarse;
-  SNES      solPatch;
-  PetscInt  numLevels;
-  DM       *patches;
+  PetscBool setfromopts; /* Flag indicating that this object has been configured from options */
+  SNES      solCoarse;   /* Solver for the coarse grid */
+  SNES      solPatch;    /* Solver for patch grids */
+  PetscInt  numLevels;   /* Number of refinement levels, 0 means solve only on coarse grid */
+  PetscInt  r;           /* The refinement ratio */
 } SNES_SRMG;
 
 #undef __FUNCT__
@@ -273,12 +273,11 @@ PetscErrorCode SNESSRMGInjectSolution_Static(DM dmPatch, Vec uPatch, PetscInt r,
 #define __FUNCT__ "SNESSRMGProcessLevel_Static"
 PetscErrorCode SNESSRMGProcessLevel_Static(SNES_SRMG *sr, DM dmCoarse, Vec solCoarse, PetscInt remainingLevels, PetscInt buffer)
 {
-  PetscInt       numQuadrants = 1, r = 1, q, dim, d;
+  PetscInt       numQuadrants = 1, q, dim, d;
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
   if (!remainingLevels) PetscFunctionReturn(0);
-  ierr = PetscOptionsGetInt(NULL, NULL, "-refine_factor", &r, NULL);CHKERRQ(ierr);
   ierr = DMGetDimension(dmCoarse, &dim);CHKERRQ(ierr);
   for (d = 0; d < dim; ++d) numQuadrants *= 2;
   for (q = 0; q < numQuadrants; ++q) {
@@ -287,7 +286,7 @@ PetscErrorCode SNESSRMGProcessLevel_Static(SNES_SRMG *sr, DM dmCoarse, Vec solCo
     Vec uPatch, bcPatch;
 
     ierr = SNESReset(sr->solPatch);CHKERRQ(ierr);
-    ierr = SNESSRMGCreatePatch_Static(dmCoarse, q, r, buffer, &interp, &dmPatch);CHKERRQ(ierr);
+    ierr = SNESSRMGCreatePatch_Static(dmCoarse, q, sr->r, buffer, &interp, &dmPatch);CHKERRQ(ierr);
     ierr = SNESSetDM(sr->solPatch, dmPatch);CHKERRQ(ierr);
     if (sr->setfromopts) {ierr = SNESSetFromOptions(sr->solPatch);CHKERRQ(ierr);}
     ierr = DMGetGlobalVector(dmPatch, &uPatch);CHKERRQ(ierr);
@@ -302,8 +301,8 @@ PetscErrorCode SNESSRMGProcessLevel_Static(SNES_SRMG *sr, DM dmCoarse, Vec solCo
     /* Recurse onto finer level */
     /* TODO Determine buffer for fine level */
     ierr = SNESSRMGProcessLevel_Static(sr, dmPatch, uPatch, remainingLevels-1, buffer);CHKERRQ(ierr);
-    /* TODO Process patch solution */
-    ierr = SNESSRMGInjectSolution_Static(dmPatch, uPatch, r, dmCoarse, solCoarse);CHKERRQ(ierr);
+    /* TODO Process patch solution: We can use the SNES monitor setup to manage functionals */
+    ierr = SNESSRMGInjectSolution_Static(dmPatch, uPatch, sr->r, dmCoarse, solCoarse);CHKERRQ(ierr);
     /* TODO Pass up patch solver convergence */
     /* Cleanup */
     ierr = DMRestoreGlobalVector(dmPatch, &uPatch);CHKERRQ(ierr);
@@ -376,6 +375,7 @@ static PetscErrorCode SNESSetFromOptions_SRMG(PetscOptionItems *PetscOptionsObje
   sr->setfromopts = PETSC_TRUE;
   ierr = PetscOptionsHead(PetscOptionsObject, "SRMG options");CHKERRQ(ierr);
   ierr = PetscOptionsInt("-snes_srmg_levels", "How many refinements to make", "SNESSRMGSetNumLevels", sr->numLevels, &sr->numLevels, NULL);CHKERRQ(ierr);
+  ierr = PetscOptionsInt("-snes_srmg_refinement_ratio", "How much to refine patch", "SNESSRMGSetRefinementRatio", sr->r, &sr->r, NULL);CHKERRQ(ierr);
   ierr = PetscOptionsTail();CHKERRQ(ierr);
   PetscFunctionReturn(0);
 }
@@ -432,7 +432,7 @@ PETSC_EXTERN PetscErrorCode SNESCreate_SRMG(SNES snes)
   sr->setfromopts = PETSC_FALSE;
   sr->solCoarse   = NULL;
   sr->numLevels   = 0;
-  sr->patches     = NULL;
+  sr->r           = 1;
 
   snes->ops->setup          = SNESSetUp_SRMG;
   snes->ops->solve          = SNESSolve_SRMG;
@@ -499,7 +499,7 @@ PetscErrorCode SNESSRMGSetNumLevels(SNES snes, PetscInt n)
 . snes - the solver context
 
   Output Parameter:
-. n - the nubmer of levels
+. n - the number of levels
 
   Level: intermediate
 
@@ -515,6 +515,66 @@ PetscErrorCode SNESSRMGGetNumLevels(SNES snes, PetscInt *n)
   PetscValidHeaderSpecific(snes, SNES_CLASSID, 1);
   PetscValidPointer(n, 2);
   *n = sr->numLevels;
+  PetscFunctionReturn(0);
+}
+
+#undef __FUNCT__
+#define __FUNCT__ "SNESSRMGSetRefinementRatio"
+/*@
+  SNESSRMGSetRefinementRatio - Sets the refinement ratio
+
+  Logically Collective on SNES
+
+  Input Parameters:
++ snes - the solver context
+- r    - the refinement ratio, e.g. 2 for doubling of the grid in each dimension
+
+  Options Database Key:
+. -snes_srmg_refinement_ratio <r>
+
+  Level: intermediate
+
+  Concepts: SRMG preconditioner
+
+.seealso: SNESSRMGGetRefinementRatio()
+@*/
+PetscErrorCode SNESSRMGSetRefinementRatio(SNES snes, PetscInt r)
+{
+  SNES_SRMG *sr = (SNES_SRMG *) snes->data;
+
+  PetscFunctionBegin;
+  PetscValidHeaderSpecific(snes, SNES_CLASSID, 1);
+  sr->r = r;
+  PetscFunctionReturn(0);
+}
+
+#undef __FUNCT__
+#define __FUNCT__ "SNESSRMGGetRefinementRatio"
+/*@
+  SNESSRMGGetRefinementRatio - Gets the refinement ratio
+
+  Not Collective on SNES
+
+  Input Parameter:
+. snes - the solver context
+
+  Output Parameter:
+. r - the refinement ratio, e.g. 2 for doubling of the grid in each dimension
+
+  Level: intermediate
+
+  Concepts: SRMG preconditioner
+
+.seealso: SNESSRMGSetRefinementRatio()
+@*/
+PetscErrorCode SNESSRMGGetRefinementRatio(SNES snes, PetscInt *r)
+{
+  SNES_SRMG *sr = (SNES_SRMG *) snes->data;
+
+  PetscFunctionBegin;
+  PetscValidHeaderSpecific(snes, SNES_CLASSID, 1);
+  PetscValidPointer(r, 2);
+  *r = sr->r;
   PetscFunctionReturn(0);
 }
 
