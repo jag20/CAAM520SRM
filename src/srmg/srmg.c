@@ -268,9 +268,9 @@ PetscErrorCode SNESSRMGFunctionalCompute_Error(SNES snes, DM dmPatch, Vec uPatch
 {
   ErrorCtx      *e = (ErrorCtx *) ctx;
   DM             cdm;
-  Vec            coordinates;
+  Vec            coordinates, error;
   DMDACoor2d   **coords;
-  PetscScalar  **u, ue;
+  PetscScalar  **u, ue, **ev;
   PetscReal      x[3];
   PetscInt       xs, xm, xo, ys, ym, yo;
   PetscInt       xsi, xmi, ysi, ymi;
@@ -278,6 +278,8 @@ PetscErrorCode SNESSRMGFunctionalCompute_Error(SNES snes, DM dmPatch, Vec uPatch
   PetscErrorCode ierr;
 
   PetscFunctionBegin;
+  ierr = DMGetGlobalVector(dmPatch, &error);CHKERRQ(ierr);
+
   ierr = DMDAGetCorners(dmPatch, &xs, &ys, NULL, &xm, &ym, NULL);CHKERRQ(ierr);
   ierr = DMDAGetOverlap(dmPatch, &xo, &yo, NULL);CHKERRQ(ierr);
   ierr = DMDAGetNonOverlappingRegion(dmPatch, &xsi, &ysi, NULL, &xmi, &ymi, NULL);CHKERRQ(ierr);
@@ -286,6 +288,7 @@ PetscErrorCode SNESSRMGFunctionalCompute_Error(SNES snes, DM dmPatch, Vec uPatch
   ierr = DMGetCoordinates(dmPatch, &coordinates);CHKERRQ(ierr);
   ierr = DMDAVecGetArray(cdm, coordinates, &coords);CHKERRQ(ierr);
   ierr = DMDAVecGetArray(dmPatch, uPatch, &u);CHKERRQ(ierr);
+  ierr = DMDAVecGetArray(dmPatch, error, &ev);CHKERRQ(ierr);
   for (j = ys; j < ys+ym; ++j) {
     for (i = xs; i < xs+xm; ++i) {
       PetscReal diff;
@@ -297,6 +300,7 @@ PetscErrorCode SNESSRMGFunctionalCompute_Error(SNES snes, DM dmPatch, Vec uPatch
       e->l2b  += diff*diff;
       e->infb  = PetscMax(e->infb, diff);
       ++e->bn;
+      ev[j][i] = diff;
       if (i >= xsi && i < xsi+xmi && j >= ysi && j < ysi+ymi) {
         /* Only include left and bottom boundaries of the patch at the boundary of the mesh */
         if ((i > xsi || !xo) && (j > ysi || !yo)) {
@@ -310,6 +314,9 @@ PetscErrorCode SNESSRMGFunctionalCompute_Error(SNES snes, DM dmPatch, Vec uPatch
   }
   ierr = DMDAVecRestoreArray(dmPatch, uPatch, &u);CHKERRQ(ierr);
   ierr = DMDAVecRestoreArray(cdm, coordinates, &coords);CHKERRQ(ierr);
+  ierr = DMDAVecRestoreArray(dmPatch, error, &ev);CHKERRQ(ierr);
+  ierr = VecViewFromOptions(error, (PetscObject) dmPatch, "-error_view");CHKERRQ(ierr);
+  ierr = DMRestoreGlobalVector(dmPatch, &error);CHKERRQ(ierr);
   PetscFunctionReturn(0);
 }
 
