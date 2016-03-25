@@ -113,9 +113,10 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
   for (k = pZs; k < pZs+pZm; ++k) {
     for (j = pYs; j < pYs+pYm; ++j) {
       for (i = pXs; i < pXs+pXm; ++i) {
+        /*index of the representative coarse node (bottom left) in the patch*/
         const PetscInt go = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r -  Xs);
         PetscInt       g[4];
-
+    
         if (i % r) {
           if (j % r) {
             g[0] = go;
@@ -125,16 +126,35 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
             dnz[g[0]]++; dnz[g[1]]++; dnz[g[2]]++; dnz[g[3]]++;
           } else {
             g[0] = go;  g[1] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
-            dnz[g[0]]++; dnz[g[1]]++;
+            dnz[g[0]]++; dnz[g[1]]++
+            if (pXm > 2){
+              g[2] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+2 -  Xs);
+              if ( i == pXs + pXm - 2){
+                g[2] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r-1 -  Xs);
+                g[1] = g[0];
+                g[0] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
+              }
+              dnz[g[2]]++;
+            }
           }
         } else {
           if (j % r) {
             g[0] = go;  g[1] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
             dnz[g[0]]++; dnz[g[1]]++;
+            if (pYm > 2){
+              g[2] = ((k/r -  Zs)*Ym  + (j/r+2 -  Ys))*Xm  + (i/r -  Xs);
+              if ( i == pYs + pYm - 2){
+                g[2] = ((k/r -  Zs)*Ym  + (j/r-1 -  Ys))*Xm  + (i/r -  Xs);
+                g[1] = g[0];
+                g[0] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
+              }
+              dnz[g[2]]++;
+            }
           } else {
             dnz[go]++;
           }
         }
+      
       }
     }
   }
@@ -159,13 +179,35 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
           } else {
             g[0] = go;  g[1] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
             v[0] = 0.5; v[1] = 0.5;
-            ierr = MatSetValues(in, 2, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+            if (pXm > 2){
+              g[2] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+2 -  Xs);
+              if ( i == pXs + pXm - 2){
+                g[2] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r-1 -  Xs);
+                g[1] = g[0];
+                g[0] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
+              }
+              v[0] = .375; v[1] = 0.75; v[2] = -.125;
+              ierr = MatSetValues(in, 3, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+            } else{
+              ierr = MatSetValues(in, 2, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+            }
           }
         } else {
           if (j % r) {
             g[0] = go;  g[1] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
             v[0] = 0.5; v[1] = 0.5;
+            if (pYm > 2){
+              g[2] = ((k/r -  Zs)*Ym  + (j/r+2 -  Ys))*Xm  + (i/r -  Xs);
+              if ( i == pYs + pYm - 2){
+                g[2] = ((k/r -  Zs)*Ym  + (j/r-1 -  Ys))*Xm  + (i/r -  Xs);
+                g[1] = g[0];
+                g[0] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
+              }
+              v[0] = .375; v[1] = 0.75; v[2] = -.125;
+              ierr = MatSetValues(in, 3, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+            } else{
             ierr = MatSetValues(in, 2, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+            }
           } else {
             v[0] = 1.0;
             ierr = MatSetValues(in, 1, &go, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
