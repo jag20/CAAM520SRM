@@ -1,0 +1,43 @@
+\section{Introduction}
+
+Full multigrid (FMG) is a provably asymptotically exact, non-iterative algebraic equation solver for discretized
+elliptic partial differential equations with work complexity of about five residual calculations, or what is known as
+textbook multigrid efficiency (TME), for the constant coefficient Laplacian~\cite{BrandtDiskin1994}. For some classes of
+elliptic problems, TME can be shown analytically, but it has been observed experimentally for a very broad spectrum of
+problems~\cite{ThomasDiskinBrandt2001,trottenberg2001multigrid,Adams-10a}. In addition, the Full Approximation Scheme
+(FAS) multigrid is applicable to general nonlinear elliptic equations.
+
+Multigrid methods are widely used in practice, but distributed memory parallel multigrid presents many implementation
+challenges. The benefits for future computer architectures of the reduction in communication, measured in both power and
+time, are well-documented in~\cite{AdamsBrownKnepleySamtaney2016}. Segmental refinement explicitly decouples subdomain
+processing on the finest multigrid levels, which improves data locality, amortizes latency costs, and reduces data
+dependencies. However, large surveys of the scientific computing userbase, such as~\cite{PrabhuEtAl2011}, show that a
+majority of practitioners are confined to a desktop computer. In addition, those users with parallel code have very long
+running jobs (${} > 50$\% run for more than 24 hours), and make very little attempt to optimize the code, leading to the
+conclusion that the leading reason for parallelism is to run jobs too large for a single machine. Our limited memory
+implementation of SRMG can allow practitioners to run very large potential problems ($10^{12}$ unknowns) in the same 24
+hour timeframe on a standard desktop machine. This capability has the potential to revolutionize scientific computing
+for the vast mass of users.
+
+\section{Background}
+
+Beginning in the 1970s, Brandt~\cite{Brandt77,DinarThesis1979,brandt1984} proposed segmental refinement multigrid (SRMG)
+as a polylogarithmic memory alternative to traditional FMG that does not store the entire solution in memory at any one
+time. More recent work~\cite{BrandtDiskin1994,MohrRude1998,Mohr2000,AdamsBrownKnepleySamtaney2016} has concentrated on
+the benefits for distributed memory computing, namely that SRMG has no interprocess communication on the finest
+grids. This paper presents an implementation with polylogarithmic memory requirements, and experimentally examines the
+accuracy, memory scalability, and dependence on interpolation order. We present multilevel numerical results,
+complementing~\cite{AdamsBrownKnepleySamtaney2016}, and verify complexity models for both computation and memory.
+
+\section{Methodology}
+
+We follow~\cite{BrandtDiskin1994} in employing a vertex-centered discretization for the multigrid iteration, in this
+case a 5-point finite difference stencil on a Cartesian grid.
+
+\subsection{Computational and Memory Models}
+
+\section{Results}
+
+List all plots and the reason for each plot.
+
+\section{Conclusions}
