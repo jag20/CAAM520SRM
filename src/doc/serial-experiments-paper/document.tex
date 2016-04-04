@@ -19,6 +19,8 @@ implementation of SRMG can allow practitioners to run very large potential probl
 hour timeframe on a standard desktop machine. This capability has the potential to revolutionize scientific computing
 for the vast mass of users.
 
+Possible applications
+
 \section{Background}
 
 Beginning in the 1970s, Brandt~\cite{Brandt77,DinarThesis1979,brandt1984} proposed segmental refinement multigrid (SRMG)
@@ -29,15 +31,49 @@ grids. This paper presents an implementation with polylogarithmic memory require
 accuracy, memory scalability, and dependence on interpolation order. We present multilevel numerical results,
 complementing~\cite{AdamsBrownKnepleySamtaney2016}, and verify complexity models for both computation and memory.
 
+Open questions
+
 \section{Methodology}
 
 We follow~\cite{BrandtDiskin1994} in employing a vertex-centered discretization for the multigrid iteration, in this
 case a 5-point finite difference stencil on a Cartesian grid.
 
+\subsection{Low Memory Functionals}
+
+Matt
+
+\subsection{Higher Order Interpolation}
+
+Rujeko
+
 \subsection{Computational and Memory Models}
+
+Jeremy
+
+\subsection{Implementation}
+
+Frankie: documentation
+
+Derek: build/test
 
 \section{Results}
 
 List all plots and the reason for each plot.
 
+Michael: Mesh Convergence MMS 1, 2, 3, 4 (Correctness)
+
+Ryan: Patch Convergence MMS 2, 3, 4 (Accuracy)
+
+Jeremy: Memory Usage (Efficiency)
+
+Ryan: Patch Convergence with different buffer size (Accuracy)
+
+John: Patch Convergence with different interpolation order (Accuracy)
+
+Shoeb: Runtime vs N (Efficiency)
+
 \section{Conclusions}
+
+Eric: Restate main result
+
+future work, open problems
