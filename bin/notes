@@ -1,0 +1,1 @@
+set quadratic interp with -snes_srmg_interp 2
