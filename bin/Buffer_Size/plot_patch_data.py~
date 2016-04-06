@@ -35,8 +35,8 @@ for buffsize in [0, 1, 2]:
     fileObject = open(file_Name,'r')
     out = pickle.load(fileObject)
     (Ns,errors) = parseErrors(k,out)
-    figure(1)
-    plot(Ns, errors)
+    #figure(1)
+    #plot(Ns, errors)
     figure(2)
     loglog(Ns, errors)
     

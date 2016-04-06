@@ -15,6 +15,6 @@ for buffsize in [0, 1, 2]:
     out = subprocess.check_output(cmd, shell=True) 
     file_Name = "data/patchlvls_" + str(k) +"_x_" +str(x_size) +"_y_"+str(y_size) + "_buffer_" + str(buffsize) + "_mms_" + str(mms) + "_refrat_" + str(refine_rat)
     fileObject = open(file_Name,'wb')
-    pickle.dump(out,fileObject)
+    fileObject.write(out)
     fileObject.close()
  

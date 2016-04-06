@@ -33,7 +33,7 @@ for buffsize in [0, 1, 2]:
     # same file name as in gen_patch_data.py
     file_Name = "data/patchlvls_" + str(k) +"_x_" +str(x_size) +"_y_"+str(y_size) + "_buffer_" + str(buffsize) + "_mms_" + str(mms) + "_refrat_" + str(refine_rat)
     fileObject = open(file_Name,'r')
-    out = pickle.load(fileObject)
+    out = fileObject.read()
     (Ns,errors) = parseErrors(k,out)
     #figure(1)
     #plot(Ns, errors)
