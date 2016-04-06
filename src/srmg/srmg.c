@@ -22,6 +22,7 @@ typedef struct {
   PetscInt  numLevels;   /* Number of refinement levels, 0 means solve only on coarse grid */
   PetscInt  r;           /* The refinement ratio */
   PetscBool inject;      /* Flag to inject fine solution to the coarse problem after solve */
+  PetscInt  interpOrder; /* The interpolation order */
 } SNES_SRMG;
 
 #undef __FUNCT__
@@ -48,64 +49,103 @@ PetscErrorCode SNESSRMGGetBounds_Static(PetscInt quadrant, PetscInt buffer, Pets
 }
 
 #undef __FUNCT__
-#define __FUNCT__ "SNESSRMGCreatePatch_Static"
-static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, PetscInt r, PetscInt buffer, Mat *interp, DM *patch)
+#define __FUNCT__ "SNESSRMGCreateInterpolator_Linear_Static"
+/* Create interpolator from coarse global vector to patch local (interior+buffer) vector */
+static PetscErrorCode SNESSRMGCreateInterpolator_Linear_Static(PetscInt Xs, PetscInt Ys, PetscInt Zs, PetscInt Xm, PetscInt Ym, PetscInt Zm, PetscInt pXs, PetscInt pYs, PetscInt pZs, PetscInt pXm, PetscInt pYm, PetscInt pZm, PetscInt r, PetscInt dof, Mat *interp)
 {
-  DMDAStencilType stencil_type;
-  Mat             in;
-  Vec             coords;
-  PetscInt        debug = 0, dim, dof, s, i, j, k, *dnz;
-  PetscInt        xs,  xm,  ys,  ym,  zs,  zm,  Xs,  Xm, Xo,  Ys,  Ym, Yo,  Zs,  Zm, Zo;
-  PetscInt        pxs, pxm, pys, pym, pzs, pzm, pXs, pXm, pYs, pYm, pZs, pZm;
-  PetscReal       cxs = 0.0, cxe = 1.0, cys = 0.0, cye = 1.0, czs = 0.0, cze = 1.0;
-  PetscReal       pcxs, pcxe, pcys, pcye, pczs, pcze;
-  MPI_Comm        comm;
-  PetscErrorCode  ierr;
+  Mat            in;
+  PetscInt      *dnz;
+  PetscInt       i, j, k;
+  PetscErrorCode ierr;
 
   PetscFunctionBegin;
-  ierr = PetscObjectGetComm((PetscObject) dm, &comm);CHKERRQ(ierr);
-  if (buffer < 0) SETERRQ1(comm, PETSC_ERR_SUP, "Buffer size must be non-negative, not %d", buffer);
-  ierr = PetscOptionsGetInt(NULL, NULL, "-snes_srmg_patch_debug", &debug, NULL);CHKERRQ(ierr);
-  ierr = DMDACreate(PETSC_COMM_SELF, patch);CHKERRQ(ierr);
-  ierr = DMAppendOptionsPrefix(*patch, "srmg_patch_");CHKERRQ(ierr);
-  ierr = DMGetDimension(dm, &dim);CHKERRQ(ierr);
-  ierr = DMSetDimension(*patch, dim);CHKERRQ(ierr);
-  ierr = DMDAGetDof(dm, &dof);CHKERRQ(ierr);
-  ierr = DMDASetDof(*patch, dof);CHKERRQ(ierr);
-  ierr = DMDAGetStencilType(dm, &stencil_type);CHKERRQ(ierr);
-  ierr = DMDASetStencilType(*patch, stencil_type);CHKERRQ(ierr);
-  ierr = DMDAGetStencilWidth(dm, &s);CHKERRQ(ierr);
-  ierr = DMDASetStencilWidth(*patch, s);CHKERRQ(ierr);
-  /* Determine patch */
-  ierr = DMDAGetCorners(dm, &Xs, &Ys, &Zs, &Xm, &Ym, &Zm);CHKERRQ(ierr);
-  ierr = DMDAGetOverlap(dm, &Xo, &Yo, &Zo);CHKERRQ(ierr);
-  Xs += Xo; Ys += Yo; Zs += Zo;
-  ierr = DMDAGetNonOverlappingRegion(dm, &xs, &ys, &zs, &xm, &ym, &zm);CHKERRQ(ierr);
-  if (!xm || !ym || !zm) {xs = Xs; xm = Xm; ys = Ys; ym = Ym; zs = Zs; zm = Zm;}
-  ierr = DMGetCoordinates(dm, &coords);CHKERRQ(ierr);
-  if (dim > 0) {ierr = VecStrideMin(coords, 0, NULL, &cxs);CHKERRQ(ierr);ierr = VecStrideMax(coords, 0, NULL, &cxe);CHKERRQ(ierr);}
-  if (dim > 1) {ierr = VecStrideMin(coords, 1, NULL, &cys);CHKERRQ(ierr);ierr = VecStrideMax(coords, 1, NULL, &cye);CHKERRQ(ierr);}
-  if (dim > 2) {ierr = VecStrideMin(coords, 2, NULL, &czs);CHKERRQ(ierr);ierr = VecStrideMax(coords, 2, NULL, &cze);CHKERRQ(ierr);}
-  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x1, Xs, xs, &pXs, &pxs, Xm, xm, &pXm, &pxm, cxs, &pcxs, cxe, &pcxe);CHKERRQ(ierr);
-  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x2, Ys, ys, &pYs, &pys, Ym, ym, &pYm, &pym, cys, &pcys, cye, &pcye);CHKERRQ(ierr);
-  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x4, Zs, zs, &pZs, &pzs, Zm, zm, &pZm, &pzm, czs, &pczs, cze, &pcze);CHKERRQ(ierr);
-  if (debug) {
-    ierr = PetscPrintf(PETSC_COMM_SELF, "X: [%d, %d) [%d, %d) (%g, %g)\n", pxs, pxs+pxm, pXs, pXs+pXm, pcxs, pcxe);CHKERRQ(ierr);
-    ierr = PetscPrintf(PETSC_COMM_SELF, "Y: [%d, %d) [%d, %d) (%g, %g)\n", pys, pys+pym, pYs, pYs+pYm, pcys, pcye);CHKERRQ(ierr);
-    ierr = PetscPrintf(PETSC_COMM_SELF, "Z: [%d, %d) [%d, %d) (%g, %g)\n", pzs, pzs+pzm, pZs, pZs+pZm, pczs, pcze);CHKERRQ(ierr);
+  ierr = PetscCalloc1(Xm*Ym*Zm, &dnz);CHKERRQ(ierr);
+  ierr = MatCreate(PETSC_COMM_SELF, &in);CHKERRQ(ierr);
+  ierr = MatSetSizes(in, Xm*Ym*Zm, pXm*pYm*pZm, PETSC_DETERMINE, PETSC_DETERMINE);CHKERRQ(ierr);
+  ierr = MatSetType(in, MATAIJ);CHKERRQ(ierr);
+  for (k = pZs; k < pZs+pZm; ++k) {
+    for (j = pYs; j < pYs+pYm; ++j) {
+      for (i = pXs; i < pXs+pXm; ++i) {
+        const PetscInt go = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r -  Xs);
+        PetscInt       g[4];
+
+        if (i % r) {
+          if (j % r) {
+            g[0] = go;
+            g[1] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
+            g[2] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
+            g[3] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r+1 -  Xs);
+            dnz[g[0]]++; dnz[g[1]]++; dnz[g[2]]++; dnz[g[3]]++;
+          } else {
+            g[0] = go;  g[1] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
+            dnz[g[0]]++; dnz[g[1]]++;
+          }
+        } else {
+          if (j % r) {
+            g[0] = go;  g[1] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
+            dnz[g[0]]++; dnz[g[1]]++;
+          } else {
+            dnz[go]++;
+          }
+        }
+      }
+    }
   }
-  /* Refine grid */
-  pXm  = r*(pXm - 1) + 1; pxm = r*(pxm - 1) + 1;
-  pYm  = r*(pYm - 1) + 1; pym = r*(pym - 1) + 1;
-  pZm  = r*(pZm - 1) + 1; pzm = r*(pzm - 1) + 1;
-  pXs  = r*pXs; pYs = r*pYs; pZs = r*pZs;
-  pxs  = r*pxs; pys = r*pys; pzs = r*pzs;
-  ierr = DMDASetSizes(*patch, pXm, pYm, pZm);CHKERRQ(ierr);
-  ierr = DMDASetNonOverlappingRegion(*patch, pxs, pys, pzs, pxm, pym, pzm);CHKERRQ(ierr);
-  ierr = DMDASetOverlap(*patch, pXs, pYs, pZs);CHKERRQ(ierr);
-  ierr = DMCopyDMSNES(dm, *patch);CHKERRQ(ierr);
-  ierr = DMSetUp(*patch);CHKERRQ(ierr);
-  /*   Create interpolator from coarse global vector to patch local (interior+buffer) vector */
+  ierr = MatXAIJSetPreallocation(in, 1, dnz, NULL, NULL, NULL);CHKERRQ(ierr);
+  ierr = MatSetUp(in);CHKERRQ(ierr);
+  for (k = pZs; k < pZs+pZm; ++k) {
+    for (j = pYs; j < pYs+pYm; ++j) {
+      for (i = pXs; i < pXs+pXm; ++i) {
+        const PetscInt lo = ((k - pZs)*pYm + (j - pYs))*pXm + (i - pXs);
+        const PetscInt go = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r -  Xs);
+        PetscInt       g[4];
+        PetscScalar    v[4];
+
+        if (i % r) {
+          if (j % r) {
+            g[0] = go;
+            g[1] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
+            g[2] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
+            g[3] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r+1 -  Xs);
+            v[0] = 0.25; v[1] = 0.25; v[2] = 0.25; v[3] = 0.25;
+            ierr = MatSetValues(in, 4, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+          } else {
+            g[0] = go;  g[1] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
+            v[0] = 0.5; v[1] = 0.5;
+            ierr = MatSetValues(in, 2, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+          }
+        } else {
+          if (j % r) {
+            g[0] = go;  g[1] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
+            v[0] = 0.5; v[1] = 0.5;
+            ierr = MatSetValues(in, 2, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+          } else {
+            v[0] = 1.0;
+            ierr = MatSetValues(in, 1, &go, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+          }
+        }
+      }
+    }
+  }
+  ierr = MatAssemblyBegin(in, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
+  ierr = MatAssemblyEnd(in, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
+  ierr = MatCreateMAIJ(in, dof, interp);CHKERRQ(ierr);
+  ierr = MatDestroy(&in);CHKERRQ(ierr);
+  ierr = PetscFree(dnz);CHKERRQ(ierr);
+  PetscFunctionReturn(0);
+}
+
+#undef __FUNCT__
+#define __FUNCT__ "SNESSRMGCreateInterpolator_Quadratic_Static"
+/* Create interpolator from coarse global vector to patch local (interior+buffer) vector */
+static PetscErrorCode SNESSRMGCreateInterpolator_Quadratic_Static(PetscInt Xs, PetscInt Ys, PetscInt Zs, PetscInt Xm, PetscInt Ym, PetscInt Zm, PetscInt pXs, PetscInt pYs, PetscInt pZs, PetscInt pXm, PetscInt pYm, PetscInt pZm, PetscInt r, PetscInt dof, Mat *interp)
+{
+  Mat            in;
+  PetscInt      *dnz;
+  PetscInt       i, j, k;
+  PetscErrorCode ierr;
+
+  PetscFunctionBegin;
   ierr = PetscCalloc1(Xm*Ym*Zm, &dnz);CHKERRQ(ierr);
   ierr = MatCreate(PETSC_COMM_SELF, &in);CHKERRQ(ierr);
   ierr = MatSetSizes(in, Xm*Ym*Zm, pXm*pYm*pZm, PETSC_DETERMINE, PETSC_DETERMINE);CHKERRQ(ierr);
@@ -126,7 +166,7 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
             dnz[g[0]]++; dnz[g[1]]++; dnz[g[2]]++; dnz[g[3]]++;
           } else {
             g[0] = go;  g[1] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
-            dnz[g[0]]++; dnz[g[1]]++
+            dnz[g[0]]++; dnz[g[1]]++;
             if (pXm > 2){
               g[2] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+2 -  Xs);
               if ( i == pXs + pXm - 2){
@@ -221,6 +261,75 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
   ierr = MatCreateMAIJ(in, dof, interp);CHKERRQ(ierr);
   ierr = MatDestroy(&in);CHKERRQ(ierr);
   ierr = PetscFree(dnz);CHKERRQ(ierr);
+  PetscFunctionReturn(0);
+}
+
+#undef __FUNCT__
+#define __FUNCT__ "SNESSRMGCreatePatch_Static"
+static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, PetscInt r, PetscInt interpOrder, PetscInt buffer, Mat *interp, DM *patch)
+{
+  DMDAStencilType stencil_type;
+  Vec             coords;
+  PetscInt        debug = 0, dim, dof, s;
+  PetscInt        xs,  xm,  ys,  ym,  zs,  zm,  Xs,  Xm, Xo,  Ys,  Ym, Yo,  Zs,  Zm, Zo;
+  PetscInt        pxs, pxm, pys, pym, pzs, pzm, pXs, pXm, pYs, pYm, pZs, pZm;
+  PetscReal       cxs = 0.0, cxe = 1.0, cys = 0.0, cye = 1.0, czs = 0.0, cze = 1.0;
+  PetscReal       pcxs, pcxe, pcys, pcye, pczs, pcze;
+  MPI_Comm        comm;
+  PetscErrorCode  ierr;
+
+  PetscFunctionBegin;
+  ierr = PetscObjectGetComm((PetscObject) dm, &comm);CHKERRQ(ierr);
+  if (buffer < 0) SETERRQ1(comm, PETSC_ERR_SUP, "Buffer size must be non-negative, not %d", buffer);
+  ierr = PetscOptionsGetInt(NULL, NULL, "-snes_srmg_patch_debug", &debug, NULL);CHKERRQ(ierr);
+  ierr = DMDACreate(PETSC_COMM_SELF, patch);CHKERRQ(ierr);
+  ierr = DMAppendOptionsPrefix(*patch, "srmg_patch_");CHKERRQ(ierr);
+  ierr = DMGetDimension(dm, &dim);CHKERRQ(ierr);
+  ierr = DMSetDimension(*patch, dim);CHKERRQ(ierr);
+  ierr = DMDAGetDof(dm, &dof);CHKERRQ(ierr);
+  ierr = DMDASetDof(*patch, dof);CHKERRQ(ierr);
+  ierr = DMDAGetStencilType(dm, &stencil_type);CHKERRQ(ierr);
+  ierr = DMDASetStencilType(*patch, stencil_type);CHKERRQ(ierr);
+  ierr = DMDAGetStencilWidth(dm, &s);CHKERRQ(ierr);
+  ierr = DMDASetStencilWidth(*patch, s);CHKERRQ(ierr);
+  /* Determine patch */
+  ierr = DMDAGetCorners(dm, &Xs, &Ys, &Zs, &Xm, &Ym, &Zm);CHKERRQ(ierr);
+  ierr = DMDAGetOverlap(dm, &Xo, &Yo, &Zo);CHKERRQ(ierr);
+  Xs += Xo; Ys += Yo; Zs += Zo;
+  ierr = DMDAGetNonOverlappingRegion(dm, &xs, &ys, &zs, &xm, &ym, &zm);CHKERRQ(ierr);
+  if (!xm || !ym || !zm) {xs = Xs; xm = Xm; ys = Ys; ym = Ym; zs = Zs; zm = Zm;}
+  ierr = DMGetCoordinates(dm, &coords);CHKERRQ(ierr);
+  if (dim > 0) {ierr = VecStrideMin(coords, 0, NULL, &cxs);CHKERRQ(ierr);ierr = VecStrideMax(coords, 0, NULL, &cxe);CHKERRQ(ierr);}
+  if (dim > 1) {ierr = VecStrideMin(coords, 1, NULL, &cys);CHKERRQ(ierr);ierr = VecStrideMax(coords, 1, NULL, &cye);CHKERRQ(ierr);}
+  if (dim > 2) {ierr = VecStrideMin(coords, 2, NULL, &czs);CHKERRQ(ierr);ierr = VecStrideMax(coords, 2, NULL, &cze);CHKERRQ(ierr);}
+  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x1, Xs, xs, &pXs, &pxs, Xm, xm, &pXm, &pxm, cxs, &pcxs, cxe, &pcxe);CHKERRQ(ierr);
+  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x2, Ys, ys, &pYs, &pys, Ym, ym, &pYm, &pym, cys, &pcys, cye, &pcye);CHKERRQ(ierr);
+  ierr = SNESSRMGGetBounds_Static(quadrant, buffer, 0x4, Zs, zs, &pZs, &pzs, Zm, zm, &pZm, &pzm, czs, &pczs, cze, &pcze);CHKERRQ(ierr);
+  if (debug) {
+    ierr = PetscPrintf(PETSC_COMM_SELF, "X: [%d, %d) [%d, %d) (%g, %g)\n", pxs, pxs+pxm, pXs, pXs+pXm, pcxs, pcxe);CHKERRQ(ierr);
+    ierr = PetscPrintf(PETSC_COMM_SELF, "Y: [%d, %d) [%d, %d) (%g, %g)\n", pys, pys+pym, pYs, pYs+pYm, pcys, pcye);CHKERRQ(ierr);
+    ierr = PetscPrintf(PETSC_COMM_SELF, "Z: [%d, %d) [%d, %d) (%g, %g)\n", pzs, pzs+pzm, pZs, pZs+pZm, pczs, pcze);CHKERRQ(ierr);
+  }
+  /* Refine grid */
+  pXm  = r*(pXm - 1) + 1; pxm = r*(pxm - 1) + 1;
+  pYm  = r*(pYm - 1) + 1; pym = r*(pym - 1) + 1;
+  pZm  = r*(pZm - 1) + 1; pzm = r*(pzm - 1) + 1;
+  pXs  = r*pXs; pYs = r*pYs; pZs = r*pZs;
+  pxs  = r*pxs; pys = r*pys; pzs = r*pzs;
+  ierr = DMDASetSizes(*patch, pXm, pYm, pZm);CHKERRQ(ierr);
+  ierr = DMDASetNonOverlappingRegion(*patch, pxs, pys, pzs, pxm, pym, pzm);CHKERRQ(ierr);
+  ierr = DMDASetOverlap(*patch, pXs, pYs, pZs);CHKERRQ(ierr);
+  ierr = DMCopyDMSNES(dm, *patch);CHKERRQ(ierr);
+  ierr = DMSetUp(*patch);CHKERRQ(ierr);
+  /* Create interpolator from coarse global vector to patch local (interior+buffer) vector */
+  switch (interpOrder) {
+  case 1:
+    ierr = SNESSRMGCreateInterpolator_Quadratic_Static(Xs, Ys, Zs, Xm, Ym, Zm, pXs, pYs, pZs, pXm, pYm, pZm, r, dof, interp);CHKERRQ(ierr);break;
+  case 2:
+    ierr = SNESSRMGCreateInterpolator_Linear_Static(Xs, Ys, Zs, Xm, Ym, Zm, pXs, pYs, pZs, pXm, pYm, pZm, r, dof, interp);CHKERRQ(ierr);break;
+  default:
+    SETERRQ1(comm, PETSC_ERR_ARG_OUTOFRANGE, "Interpolation order %D not supported", interpOrder);
+  }
   /* Scatter in coordinates */
   ierr = DMDASetUniformCoordinates(*patch, pcxs, pcxe, pcys, pcye, pczs, pcze);CHKERRQ(ierr);
   ierr = DMViewFromOptions(*patch, NULL, "-dm_view");CHKERRQ(ierr);
@@ -448,7 +557,7 @@ PetscErrorCode SNESSRMGProcessLevel_Static(SNES snes, DM dmCoarse, Vec solCoarse
     Vec uPatch, bcPatch;
 
     ierr = SNESReset(sr->solPatch);CHKERRQ(ierr);
-    ierr = SNESSRMGCreatePatch_Static(dmCoarse, q, sr->r, buffer, &interp, &dmPatch);CHKERRQ(ierr);
+    ierr = SNESSRMGCreatePatch_Static(dmCoarse, q, sr->r, sr->interpOrder, buffer, &interp, &dmPatch);CHKERRQ(ierr);
     ierr = SNESSetDM(sr->solPatch, dmPatch);CHKERRQ(ierr);
     if (sr->setfromopts) {ierr = SNESSetFromOptions(sr->solPatch);CHKERRQ(ierr);}
     ierr = DMGetGlobalVector(dmPatch, &uPatch);CHKERRQ(ierr);
@@ -541,6 +650,7 @@ static PetscErrorCode SNESSetFromOptions_SRMG(PetscOptionItems *PetscOptionsObje
   ierr = PetscOptionsInt("-snes_srmg_levels", "How many refinements to make", "SNESSRMGSetNumLevels", sr->numLevels, &sr->numLevels, NULL);CHKERRQ(ierr);
   ierr = PetscOptionsInt("-snes_srmg_refinement_ratio", "How much to refine patch", "SNESSRMGSetRefinementRatio", sr->r, &sr->r, NULL);CHKERRQ(ierr);
   ierr = PetscOptionsBool("-snes_srmg_inject", "Inject fine solution into the coarse after patch solve", "SNESSRMGSetInject", sr->inject, &sr->inject, NULL);CHKERRQ(ierr);
+  ierr = PetscOptionsInt("-snes_srmg_interp_order", "The interpolation order between levels", "SNESSRMGSetInterpolationOrder", sr->interpOrder, &sr->interpOrder, NULL);CHKERRQ(ierr);
   ierr = PetscOptionsTail();CHKERRQ(ierr);
   PetscFunctionReturn(0);
 }
@@ -599,6 +709,7 @@ PETSC_EXTERN PetscErrorCode SNESCreate_SRMG(SNES snes)
   sr->numLevels   = 0;
   sr->r           = 1;
   sr->inject      = PETSC_TRUE;
+  sr->interpOrder = 1;
 
   snes->ops->setup          = SNESSetUp_SRMG;
   snes->ops->solve          = SNESSolve_SRMG;
