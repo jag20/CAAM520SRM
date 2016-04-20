@@ -15,8 +15,8 @@ for mms_val in mms:
         Nx = 10*2**k
         modname = 'perf%d' %k
         options = ['-mms', str(mms_val), '-da_grid_x', str(Nx), '-da_grid_y', str(Nx), '-log_view', ':%s.py:ascii_info_detail' %modname] 
-        path =  '.' + os.environ['PETSC_DIR'] + '/src/snes/examples/tutorials/ex5 '
-        output = subprocess.check_output('./ex5 ' +' '.join(options), shell=True)
+        path    = os.environ['PETSC_DIR'] + '/src/snes/examples/tutorials/ex5 '
+        output  = subprocess.check_output(path +' '.join(options), shell=True)
         start_index = output.find('l2')
         if start_index == -1:
             raise Exception ("l2 norm Not found")
@@ -48,13 +48,14 @@ for mms_val in mms:
 ##########  Plots  ####################
     plot(sizes, errors)
     title('SNES ex5')
-    xlabel('Problem Size $N$')
-    ylabel('Error')
+    xlabel('Problem Size $\log(N)$')
+    ylabel('$\log(Error)$')
     savefig('SNES ex5_' + str(mms_val)+'.png')
     figure()
     loglog(sizes, errors, sizes, 0.9*sizes**-1.5)
     title('loglog SNES ex5')
     xlabel('Problem Size $N$')
     ylabel('Error')
+    legend(['MMS '+str(mms_val), '$N^{-3/2}$'])
     savefig('loglog SNES ex5_'+str(mms_val)+'.png')
     #show()
