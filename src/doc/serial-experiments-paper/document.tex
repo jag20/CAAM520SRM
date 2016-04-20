@@ -73,6 +73,13 @@ Rujeko
 
 Jeremy
 
+Let $n_0$ be the number of unknowns in one dimension at the coarsest level. Consider at i levels of refinement, we have $2^i n_0$ unknowns in one dimension as a result of i smoothing operations. Denote the  number of unknowns at the smoothest level by $N$.  Thus the maximum number of refinements is $l = log(N) - log(n_0)$. Since we half (in each dimension) the size of the subdomains domain every time , we have $\frac{2^i}{2^i} n_0 = n_0$ unknowns in the area of interest at every level, but must also calculate cells in a buffer region. 
+
+Note that the number of cells in the buffer region grows at a constant rate (which can be proven). So we need $n_0 + c i$ cells in each dimension at i levels of refinement. Larger buffer regions correspond to a larger constant. 
+
+Let d be the dimension of the domain. 
+
+$O(\sum_{i=0}^l (n_0 + c i)^d) = O(n_0 * l) + O(\sum_{i=0}^l c i^d) = O(n_0 logN) + O(l^{d+1}) = O( n_0 log N) + O(logN)^d $
 \subsection{Implementation}
 
 Frankie: documentation
