@@ -31,16 +31,39 @@ grids. This paper presents an implementation with polylogarithmic memory require
 accuracy, memory scalability, and dependence on interpolation order. We present multilevel numerical results,
 complementing~\cite{AdamsBrownKnepleySamtaney2016}, and verify complexity models for both computation and memory.
 
-Open questions
+In prior work, it was unclear whether an actual implementation could scale indefinitely with a finite buffer size. In
+fact, contrary to the theory sketched in~\cite{BrandtDiskin1994}, in~\cite{AdamsBrownKnepleySamtaney2016} it appears
+that the buffer size must grow with the number of levels. Second, no prior implementation had demonstrated
+polylogarithmic memory usage. We address both of these questions in Section~\ref{sec:results}.
 
 \section{Methodology}
 
 We follow~\cite{BrandtDiskin1994} in employing a vertex-centered discretization for the multigrid iteration, in this
-case a 5-point finite difference stencil on a Cartesian grid.
+case a 5-point finite difference stencil on a Cartesian grid, embodied in the long-standing PETSc example code, SNES
+ex5~\cite{petsc-user-ref}. This code, in fact, solves the Bratu equation, but we reduce this to the Laplace equation by
+setting the parameter $\lambda = 0$.
 
 \subsection{Low Memory Functionals}
 
-Matt
+Since our implementation is low-memory by design, we must make use of the fine grid solution one patch at a
+time. Fortunately, we can do this by computing functionals $\mathcal{F}$ of the solution which can be expressed as
+integrals over the domain,
+\begin{align}
+  \mathcal{F}(u) = \int_\Omega f(u)\,dx.
+\end{align}
+Since the integral is additive, we can express this as a sum over patches
+\begin{align}
+  \mathcal{F}(u) = \sum_P \int_{\Omega_P} f(u)\,dx,
+\end{align}
+and we can batch this processing by computing several functionals at once on each patch. For example, we use the error
+functional $\mathcal{E}^p$ to check that our manufactured solution converges at the correct rate,
+\begin{align}
+  \mathcal{E}^p(u) = \left( \sum_P \int_{\Omega_P} |u - u^*|^p\,dx \right)^{1/p},
+\end{align}
+so we integrate $|u - u^*|$, $|u - u^*|^2$, and $\max |u - u^*|$ simultaneously on each patch, keeping the result in a
+separate accumulator, and then after all patches at a given level are processed, we take the appropriate root and output
+the result. Thus, we need two functions for each user functional, one that computes the integral over a patch, and one
+that does final processing and outputs the result.
 
 \subsection{Higher Order Interpolation}
 
@@ -56,7 +79,7 @@ Frankie: documentation
 
 Derek: build/test
 
-\section{Results}
+\section{Results}\label{sec:results}
 
 List all plots and the reason for each plot.
 
