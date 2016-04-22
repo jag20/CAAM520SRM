@@ -1,4 +1,34 @@
 #! /usr/bin/env python
+import os, sys
+sys.path.insert(0, os.path.join(os.environ['PETSC_DIR'], 'config'))
+sys.path.insert(0, os.path.join(os.environ['PETSC_DIR'], 'config', 'BuildSystem'))
+
+import script
+class ConfigReader(script.Script):
+  def __init__(self):
+    import RDict
+    import os
+
+    argDB = RDict.RDict(None, None, 0, 0)
+    argDB.saveFilename = os.path.join(os.environ['PETSC_DIR'], os.environ['PETSC_ARCH'], 'lib','petsc','conf', 'RDict.db')
+    argDB.load()
+    script.Script.__init__(self, argDB = argDB)
+    return
+
+  def get(self, key):
+    return self.framework.argDB[key]
+
+  def getModule(self, modname):
+    return self.framework.require(modname, None)
+
+  def run(self):
+    self.setup()
+    self.framework = self.loadConfigure()
+
+config = ConfigReader()
+config.run()
+sharedExt = config.getModule('config.setCompilers').sharedLibraryExt
+
 import pickle
 import subprocess
 
