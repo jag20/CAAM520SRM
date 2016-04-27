@@ -1,0 +1,683 @@
+L: 5 N: 591361 n: 2401 error l2 4.25371e-07 inf 0.0220685
+L: 5 Buffered error n: 6400 l2 1.85718e-06 inf 0.0753989
+L: 5 N: 591361 n: 2352 error l2 1.05261e-06 inf 0.0421222
+L: 5 Buffered error n: 7200 l2 4.37523e-06 inf 0.145001
+L: 5 N: 591361 n: 2352 error l2 1.05265e-06 inf 0.0421222
+L: 5 Buffered error n: 7200 l2 4.37522e-06 inf 0.145001
+L: 5 N: 591361 n: 2304 error l2 2.61759e-06 inf 0.0855429
+L: 5 Buffered error n: 8100 l2 1.02228e-05 inf 0.278856
+L: 4 N: 148225 n: 2401 error l2 9.24733e-06 inf 0.123886
+L: 4 Buffered error n: 6400 l2 3.16672e-05 inf 0.278856
+L: 5 N: 591361 n: 2352 error l2 1.36654e-06 inf 0.0494895
+L: 5 Buffered error n: 7200 l2 5.62463e-06 inf 0.170701
+L: 5 N: 591361 n: 2352 error l2 2.32212e-06 inf 0.071556
+L: 5 Buffered error n: 7200 l2 9.43765e-06 inf 0.246271
+L: 5 N: 591361 n: 2304 error l2 3.41627e-06 inf 0.107686
+L: 5 Buffered error n: 8100 l2 1.31237e-05 inf 0.328279
+L: 5 N: 591361 n: 2304 error l2 5.93731e-06 inf 0.176919
+L: 5 Buffered error n: 8100 l2 2.20191e-05 inf 0.47361
+L: 4 N: 148225 n: 2352 error l2 2.24315e-05 inf 0.309625
+L: 4 Buffered error n: 7200 l2 7.12064e-05 inf 0.47361
+L: 5 N: 591361 n: 2352 error l2 1.36662e-06 inf 0.0494895
+L: 5 Buffered error n: 7200 l2 5.62462e-06 inf 0.170701
+L: 5 N: 591361 n: 2304 error l2 3.41627e-06 inf 0.107686
+L: 5 Buffered error n: 8100 l2 1.31237e-05 inf 0.328279
+L: 5 N: 591361 n: 2352 error l2 2.32228e-06 inf 0.071556
+L: 5 Buffered error n: 7200 l2 9.43763e-06 inf 0.246271
+L: 5 N: 591361 n: 2304 error l2 5.93731e-06 inf 0.176919
+L: 5 Buffered error n: 8100 l2 2.20191e-05 inf 0.47361
+L: 4 N: 148225 n: 2352 error l2 2.24315e-05 inf 0.309625
+L: 4 Buffered error n: 7200 l2 7.12063e-05 inf 0.47361
+L: 5 N: 591361 n: 2304 error l2 4.47435e-06 inf 0.136163
+L: 5 Buffered error n: 8100 l2 1.68451e-05 inf 0.386462
+L: 5 N: 591361 n: 2304 error l2 7.9003e-06 inf 0.22814
+L: 5 Buffered error n: 8100 l2 2.82793e-05 inf 0.55755
+L: 5 N: 591361 n: 2304 error l2 7.9003e-06 inf 0.22814
+L: 5 Buffered error n: 8100 l2 2.82793e-05 inf 0.55755
+L: 5 N: 591361 n: 2304 error l2 1.54598e-05 inf 0.436422
+L: 5 Buffered error n: 8100 l2 4.77597e-05 inf 0.804381
+L: 4 N: 148225 n: 2304 error l2 5.66993e-05 inf 0.5877
+L: 4 Buffered error n: 8100 l2 0.000160049 inf 0.804381
+L: 3 N: 37249 n: 2401 error l2 0.00016105 inf 0.528554
+L: 3 Buffered error n: 6400 l2 0.000441146 inf 0.804381
+L: 5 N: 591361 n: 2352 error l2 1.95998e-06 inf 0.0622515
+L: 5 Buffered error n: 7200 l2 7.99299e-06 inf 0.215082
+L: 5 N: 591361 n: 2352 error l2 2.73942e-06 inf 0.0795539
+L: 5 Buffered error n: 7200 l2 1.10891e-05 inf 0.267416
+L: 5 N: 591361 n: 2304 error l2 4.96309e-06 inf 0.148873
+L: 5 Buffered error n: 8100 l2 1.86412e-05 inf 0.413629
+L: 5 N: 591361 n: 2304 error l2 7.09393e-06 inf 0.204775
+L: 5 Buffered error n: 8100 l2 2.58836e-05 inf 0.514273
+L: 4 N: 148225 n: 2352 error l2 2.81845e-05 inf 0.372617
+L: 4 Buffered error n: 7200 l2 8.79508e-05 inf 0.514273
+L: 5 N: 591361 n: 2352 error l2 3.0988e-06 inf 0.0862953
+L: 5 Buffered error n: 7200 l2 1.25093e-05 inf 0.274588
+L: 5 N: 591361 n: 2352 error l2 2.98439e-06 inf 0.0853496
+L: 5 Buffered error n: 7200 l2 1.20668e-05 inf 0.274587
+L: 5 N: 591361 n: 2304 error l2 8.12826e-06 inf 0.224491
+L: 5 Buffered error n: 8100 l2 2.92165e-05 inf 0.528068
+L: 5 N: 591361 n: 2304 error l2 7.799e-06 inf 0.221688
+L: 5 Buffered error n: 8100 l2 2.81737e-05 inf 0.528065
+L: 4 N: 148225 n: 2352 error l2 3.64023e-05 inf 0.429636
+L: 4 Buffered error n: 7200 l2 0.000110435 inf 0.528067
+L: 5 N: 591361 n: 2304 error l2 6.5564e-06 inf 0.190209
+L: 5 Buffered error n: 8100 l2 2.39323e-05 inf 0.486938
+L: 5 N: 591361 n: 2304 error l2 9.53693e-06 inf 0.267129
+L: 5 Buffered error n: 8100 l2 3.32586e-05 inf 0.605421
+L: 5 N: 591361 n: 2304 error l2 1.21356e-05 inf 0.33786
+L: 5 Buffered error n: 8100 l2 4.02775e-05 inf 0.702509
+L: 5 N: 591361 n: 2304 error l2 2.12464e-05 inf 0.60866
+L: 5 Buffered error n: 8100 l2 5.67504e-05 inf 0.873444
+L: 4 N: 148225 n: 2304 error l2 7.39257e-05 inf 0.707266
+L: 4 Buffered error n: 8100 l2 0.000198191 inf 0.873444
+L: 5 N: 591361 n: 2304 error l2 1.10541e-05 inf 0.295773
+L: 5 Buffered error n: 8100 l2 3.75634e-05 inf 0.62166
+L: 5 N: 591361 n: 2304 error l2 1.05703e-05 inf 0.291635
+L: 5 Buffered error n: 8100 l2 3.62151e-05 inf 0.621657
+L: 5 N: 591361 n: 2304 error l2 2.99431e-05 inf 0.771108
+L: 5 Buffered error n: 8100 l2 6.57358e-05 inf 0.896872
+L: 5 N: 591361 n: 2304 error l2 2.62428e-05 inf 0.743367
+L: 5 Buffered error n: 8100 l2 6.25733e-05 inf 0.896868
+L: 4 N: 148225 n: 2304 error l2 0.000102286 inf 0.815492
+L: 4 Buffered error n: 8100 l2 0.000250411 inf 0.896872
+L: 3 N: 37249 n: 2352 error l2 0.000317897 inf 0.80552
+L: 3 Buffered error n: 7200 l2 0.000768165 inf 0.896819
+L: 5 N: 591361 n: 2352 error l2 1.96011e-06 inf 0.0622515
+L: 5 Buffered error n: 7200 l2 7.99298e-06 inf 0.215082
+L: 5 N: 591361 n: 2304 error l2 4.96309e-06 inf 0.148873
+L: 5 Buffered error n: 8100 l2 1.86412e-05 inf 0.413629
+L: 5 N: 591361 n: 2352 error l2 2.73962e-06 inf 0.0795539
+L: 5 Buffered error n: 7200 l2 1.10891e-05 inf 0.267416
+L: 5 N: 591361 n: 2304 error l2 7.09393e-06 inf 0.204775
+L: 5 Buffered error n: 8100 l2 2.58836e-05 inf 0.514273
+L: 4 N: 148225 n: 2352 error l2 2.81845e-05 inf 0.372617
+L: 4 Buffered error n: 7200 l2 8.79506e-05 inf 0.514273
+L: 5 N: 591361 n: 2304 error l2 6.5564e-06 inf 0.190209
+L: 5 Buffered error n: 8100 l2 2.39323e-05 inf 0.486938
+L: 5 N: 591361 n: 2304 error l2 1.21356e-05 inf 0.33786
+L: 5 Buffered error n: 8100 l2 4.02775e-05 inf 0.702509
+L: 5 N: 591361 n: 2304 error l2 9.53693e-06 inf 0.267129
+L: 5 Buffered error n: 8100 l2 3.32586e-05 inf 0.605421
+L: 5 N: 591361 n: 2304 error l2 2.12464e-05 inf 0.60866
+L: 5 Buffered error n: 8100 l2 5.67504e-05 inf 0.873444
+L: 4 N: 148225 n: 2304 error l2 7.39257e-05 inf 0.707266
+L: 4 Buffered error n: 8100 l2 0.000198191 inf 0.873444
+L: 5 N: 591361 n: 2352 error l2 3.09904e-06 inf 0.0862953
+L: 5 Buffered error n: 7200 l2 1.25093e-05 inf 0.274588
+L: 5 N: 591361 n: 2304 error l2 8.12826e-06 inf 0.224491
+L: 5 Buffered error n: 8100 l2 2.92165e-05 inf 0.528068
+L: 5 N: 591361 n: 2352 error l2 2.98463e-06 inf 0.0853496
+L: 5 Buffered error n: 7200 l2 1.20668e-05 inf 0.274587
+L: 5 N: 591361 n: 2304 error l2 7.799e-06 inf 0.221688
+L: 5 Buffered error n: 8100 l2 2.81737e-05 inf 0.528065
+L: 4 N: 148225 n: 2352 error l2 3.64024e-05 inf 0.429636
+L: 4 Buffered error n: 7200 l2 0.000110434 inf 0.528067
+L: 5 N: 591361 n: 2304 error l2 1.10541e-05 inf 0.295773
+L: 5 Buffered error n: 8100 l2 3.75634e-05 inf 0.62166
+L: 5 N: 591361 n: 2304 error l2 2.99431e-05 inf 0.771106
+L: 5 Buffered error n: 8100 l2 6.57356e-05 inf 0.896872
+L: 5 N: 591361 n: 2304 error l2 1.05704e-05 inf 0.291635
+L: 5 Buffered error n: 8100 l2 3.62151e-05 inf 0.621657
+L: 5 N: 591361 n: 2304 error l2 2.62423e-05 inf 0.743599
+L: 5 Buffered error n: 8100 l2 6.25736e-05 inf 0.896868
+L: 4 N: 148225 n: 2304 error l2 0.000102287 inf 0.815492
+L: 4 Buffered error n: 8100 l2 0.000250411 inf 0.896872
+L: 3 N: 37249 n: 2352 error l2 0.0003179 inf 0.805752
+L: 3 Buffered error n: 7200 l2 0.000768163 inf 0.896819
+L: 5 N: 591361 n: 2304 error l2 0.000211366 inf 7.92461
+L: 5 Buffered error n: 8100 l2 0.00027797 inf 8.73926
+L: 5 N: 591361 n: 2304 error l2 0.000101786 inf 6.57774
+L: 5 Buffered error n: 8100 l2 0.000240488 inf 8.32586
+L: 5 N: 591361 n: 2304 error l2 0.000110416 inf 5.63044
+L: 5 Buffered error n: 8100 l2 0.000242493 inf 8.39288
+L: 5 N: 591361 n: 2304 error l2 2.82202e-05 inf 0.688871
+L: 5 Buffered error n: 8100 l2 6.74805e-05 inf 0.948436
+L: 4 N: 148225 n: 2304 error l2 0.000513663 inf 8.75321
+L: 4 Buffered error n: 8100 l2 0.000759176 inf 8.75321
+L: 5 N: 591361 n: 2304 error l2 1.86644e-05 inf 0.484758
+L: 5 Buffered error n: 8100 l2 5.38357e-05 inf 0.783286
+L: 5 N: 591361 n: 2304 error l2 1.75446e-05 inf 0.473499
+L: 5 Buffered error n: 8100 l2 5.18349e-05 inf 0.783282
+L: 5 N: 591361 n: 2304 error l2 7.49949e-05 inf 2.97678
+L: 5 Buffered error n: 8100 l2 0.000104841 inf 2.97678
+L: 5 N: 591361 n: 2304 error l2 3.22613e-05 inf 0.750295
+L: 5 Buffered error n: 8100 l2 7.4016e-05 inf 0.973871
+L: 4 N: 148225 n: 2304 error l2 0.000156678 inf 2.9086
+L: 4 Buffered error n: 8100 l2 0.000324506 inf 2.9086
+L: 5 N: 591361 n: 2304 error l2 0.000210966 inf 7.65113
+L: 5 Buffered error n: 8100 l2 0.000338819 inf 8.46251
+L: 5 N: 591361 n: 2304 error l2 0.00013986 inf 7.15311
+L: 5 Buffered error n: 8100 l2 0.000211391 inf 7.5642
+L: 5 N: 591361 n: 2304 error l2 0.000142161 inf 7.35554
+L: 5 Buffered error n: 8100 l2 0.000259718 inf 8.3723
+L: 5 N: 591361 n: 2304 error l2 0.000184166 inf 7.60063
+L: 5 Buffered error n: 8100 l2 0.00031183 inf 7.60063
+L: 4 N: 148225 n: 2304 error l2 0.000666918 inf 7.60063
+L: 4 Buffered error n: 8100 l2 0.00101341 inf 9.01912
+L: 5 N: 591361 n: 2304 error l2 0.000294794 inf 6.75828
+L: 5 Buffered error n: 8100 l2 0.000568389 inf 7.34292
+L: 5 N: 591361 n: 2304 error l2 0.000255993 inf 7.00189
+L: 5 Buffered error n: 8100 l2 0.000468659 inf 7.00189
+L: 5 N: 591361 n: 2304 error l2 0.000302897 inf 6.71132
+L: 5 Buffered error n: 8100 l2 0.000563558 inf 6.9734
+L: 5 N: 591361 n: 2304 error l2 0.000322691 inf 6.91939
+L: 5 Buffered error n: 8100 l2 0.000563097 inf 6.91939
+L: 4 N: 148225 n: 2304 error l2 0.0011693 inf 6.93921
+L: 4 Buffered error n: 8100 l2 0.00196452 inf 7.32123
+L: 3 N: 37249 n: 2304 error l2 0.00285199 inf 8.31635
+L: 3 Buffered error n: 8100 l2 0.00365004 inf 8.9182
+L: 2 N: 9409 n: 2401 error l2 0.00611994 inf 8.1221
+L: 2 Buffered error n: 6400 l2 0.00723059 inf 8.1221
+L: 5 N: 591361 n: 2352 error l2 2.79947e-06 inf 0.0795144
+L: 5 Buffered error n: 7200 l2 1.13332e-05 inf 0.262765
+L: 5 N: 591361 n: 2352 error l2 3.11466e-06 inf 0.0863938
+L: 5 Buffered error n: 7200 l2 1.25784e-05 inf 0.274588
+L: 5 N: 591361 n: 2304 error l2 7.26344e-06 inf 0.204643
+L: 5 Buffered error n: 8100 l2 2.6459e-05 inf 0.505329
+L: 5 N: 591361 n: 2304 error l2 8.17515e-06 inf 0.224745
+L: 5 Buffered error n: 8100 l2 2.93835e-05 inf 0.528066
+L: 4 N: 148225 n: 2352 error l2 3.52337e-05 inf 0.431009
+L: 4 Buffered error n: 7200 l2 0.000108258 inf 0.528062
+L: 5 N: 591361 n: 2352 error l2 3.13931e-06 inf 0.0867314
+L: 5 Buffered error n: 7200 l2 1.26805e-05 inf 0.274588
+L: 5 N: 591361 n: 2352 error l2 2.76116e-06 inf 0.0802892
+L: 5 Buffered error n: 7200 l2 1.11974e-05 inf 0.266508
+L: 5 N: 591361 n: 2304 error l2 8.24926e-06 inf 0.225721
+L: 5 Buffered error n: 8100 l2 2.96239e-05 inf 0.528067
+L: 5 N: 591361 n: 2304 error l2 7.1611e-06 inf 0.206882
+L: 5 Buffered error n: 8100 l2 2.61394e-05 inf 0.512527
+L: 4 N: 148225 n: 2352 error l2 3.53612e-05 inf 0.439129
+L: 4 Buffered error n: 7200 l2 0.000107433 inf 0.528067
+L: 5 N: 591361 n: 2304 error l2 9.77765e-06 inf 0.266888
+L: 5 Buffered error n: 8100 l2 3.40007e-05 inf 0.594892
+L: 5 N: 591361 n: 2304 error l2 1.1123e-05 inf 0.296084
+L: 5 Buffered error n: 8100 l2 3.77802e-05 inf 0.621659
+L: 5 N: 591361 n: 2304 error l2 2.192e-05 inf 0.604
+L: 5 Buffered error n: 8100 l2 5.80454e-05 inf 0.858254
+L: 5 N: 591361 n: 2304 error l2 2.98497e-05 inf 0.763969
+L: 5 Buffered error n: 8100 l2 6.60214e-05 inf 0.89687
+L: 4 N: 148225 n: 2304 error l2 9.81802e-05 inf 0.8181
+L: 4 Buffered error n: 8100 l2 0.000245254 inf 0.896862
+L: 5 N: 591361 n: 2304 error l2 1.12355e-05 inf 0.297485
+L: 5 Buffered error n: 8100 l2 3.80915e-05 inf 0.621659
+L: 5 N: 591361 n: 2304 error l2 9.63759e-06 inf 0.270109
+L: 5 Buffered error n: 8100 l2 3.35891e-05 inf 0.603366
+L: 5 N: 591361 n: 2304 error l2 2.96474e-05 inf 0.751868
+L: 5 Buffered error n: 8100 l2 6.64059e-05 inf 0.896871
+L: 5 N: 591361 n: 2304 error l2 2.18771e-05 inf 0.63108
+L: 5 Buffered error n: 8100 l2 5.74154e-05 inf 0.870479
+L: 4 N: 148225 n: 2304 error l2 9.77854e-05 inf 0.833512
+L: 4 Buffered error n: 8100 l2 0.000243299 inf 0.896871
+L: 3 N: 37249 n: 2352 error l2 0.00034225 inf 0.816931
+L: 3 Buffered error n: 7200 l2 0.000826725 inf 0.896873
+L: 5 N: 591361 n: 2352 error l2 2.55552e-06 inf 0.0737568
+L: 5 Buffered error n: 7200 l2 1.0381e-05 inf 0.246271
+L: 5 N: 591361 n: 2352 error l2 1.85524e-06 inf 0.0568556
+L: 5 Buffered error n: 7200 l2 7.60431e-06 inf 0.203457
+L: 5 N: 591361 n: 2304 error l2 6.58231e-06 inf 0.188296
+L: 5 Buffered error n: 8100 l2 2.42257e-05 inf 0.47361
+L: 5 N: 591361 n: 2304 error l2 4.69181e-06 inf 0.142212
+L: 5 Buffered error n: 8100 l2 1.77359e-05 inf 0.391272
+L: 4 N: 148225 n: 2352 error l2 2.6708e-05 inf 0.364071
+L: 4 Buffered error n: 7200 l2 8.15365e-05 inf 0.47361
+L: 5 N: 591361 n: 2352 error l2 1.20792e-06 inf 0.0384094
+L: 5 Buffered error n: 7200 l2 4.99905e-06 inf 0.145001
+L: 5 N: 591361 n: 2352 error l2 4.52775e-07 inf 0.0194324
+L: 5 Buffered error n: 6400 l2 1.95305e-06 inf 0.0753989
+L: 5 N: 591361 n: 2304 error l2 3.01414e-06 inf 0.0944436
+L: 5 Buffered error n: 8100 l2 1.16594e-05 inf 0.278856
+L: 5 N: 591361 n: 2304 error l2 1.12179e-06 inf 0.0387519
+L: 5 Buffered error n: 7200 l2 4.58183e-06 inf 0.145001
+L: 4 N: 148225 n: 2352 error l2 1.0942e-05 inf 0.178422
+L: 4 Buffered error n: 6400 l2 3.40379e-05 inf 0.278856
+L: 5 N: 591361 n: 2304 error l2 8.8053e-06 inf 0.243859
+L: 5 Buffered error n: 8100 l2 3.112e-05 inf 0.55755
+L: 5 N: 591361 n: 2304 error l2 6.19096e-06 inf 0.181363
+L: 5 Buffered error n: 8100 l2 2.27688e-05 inf 0.46062
+L: 5 N: 591361 n: 2304 error l2 1.80038e-05 inf 0.488841
+L: 5 Buffered error n: 8100 l2 5.27082e-05 inf 0.804381
+L: 5 N: 591361 n: 2304 error l2 1.13588e-05 inf 0.318319
+L: 5 Buffered error n: 8100 l2 3.82982e-05 inf 0.664539
+L: 4 N: 148225 n: 2304 error l2 6.768e-05 inf 0.691045
+L: 4 Buffered error n: 8100 l2 0.00018341 inf 0.804381
+L: 5 N: 591361 n: 2304 error l2 3.94253e-06 inf 0.119127
+L: 5 Buffered error n: 8100 l2 1.49628e-05 inf 0.328279
+L: 5 N: 591361 n: 2304 error l2 1.45844e-06 inf 0.0484528
+L: 5 Buffered error n: 7200 l2 5.8853e-06 inf 0.170701
+L: 5 N: 591361 n: 2304 error l2 6.90593e-06 inf 0.197376
+L: 5 Buffered error n: 8100 l2 2.51003e-05 inf 0.47361
+L: 5 N: 591361 n: 2304 error l2 2.48621e-06 inf 0.0776087
+L: 5 Buffered error n: 7200 l2 9.86686e-06 inf 0.246271
+L: 4 N: 148225 n: 2304 error l2 2.67493e-05 inf 0.338664
+L: 4 Buffered error n: 7200 l2 7.66138e-05 inf 0.47361
+L: 3 N: 37249 n: 2352 error l2 0.000186538 inf 0.591951
+L: 3 Buffered error n: 6400 l2 0.00047523 inf 0.804381
+L: 5 N: 591361 n: 2304 error l2 0.000265095 inf 8.93542
+L: 5 Buffered error n: 8100 l2 0.000457379 inf 8.95126
+L: 5 N: 591361 n: 2304 error l2 0.000266135 inf 8.59036
+L: 5 Buffered error n: 8100 l2 0.000461323 inf 8.59036
+L: 5 N: 591361 n: 2304 error l2 0.000264834 inf 6.80133
+L: 5 Buffered error n: 8100 l2 0.000458197 inf 6.89525
+L: 5 N: 591361 n: 2304 error l2 0.000285052 inf 6.03081
+L: 5 Buffered error n: 8100 l2 0.00052931 inf 6.79595
+L: 4 N: 148225 n: 2304 error l2 0.00106679 inf 8.94851
+L: 4 Buffered error n: 8100 l2 0.00171747 inf 8.94851
+L: 5 N: 591361 n: 2304 error l2 0.000210052 inf 6.74416
+L: 5 Buffered error n: 8100 l2 0.000391614 inf 6.93682
+L: 5 N: 591361 n: 2304 error l2 8.39016e-05 inf 8.07438
+L: 5 Buffered error n: 8100 l2 0.000191748 inf 8.32239
+L: 5 N: 591361 n: 2304 error l2 0.000224423 inf 6.56675
+L: 5 Buffered error n: 8100 l2 0.000396139 inf 7.04628
+L: 5 N: 591361 n: 2304 error l2 0.000167685 inf 6.04139
+L: 5 Buffered error n: 8100 l2 0.000284785 inf 8.61978
+L: 4 N: 148225 n: 2304 error l2 0.000710148 inf 8.10112
+L: 4 Buffered error n: 8100 l2 0.00119489 inf 8.10112
+L: 5 N: 591361 n: 2304 error l2 0.00024932 inf 7.06936
+L: 5 Buffered error n: 8100 l2 0.000402112 inf 8.41063
+L: 5 N: 591361 n: 2304 error l2 0.000149879 inf 7.31963
+L: 5 Buffered error n: 8100 l2 0.000374439 inf 8.30674
+L: 5 N: 591361 n: 2304 error l2 3.30512e-05 inf 0.715424
+L: 5 Buffered error n: 8100 l2 7.56446e-05 inf 0.956935
+L: 5 N: 591361 n: 2304 error l2 0.000263703 inf 7.90682
+L: 5 Buffered error n: 8100 l2 0.000458822 inf 7.99852
+L: 4 N: 148225 n: 2304 error l2 0.000767293 inf 8.41425
+L: 4 Buffered error n: 8100 l2 0.0014084 inf 8.62363
+L: 5 N: 591361 n: 2304 error l2 0.000129644 inf 4.49438
+L: 5 Buffered error n: 8100 l2 0.000287473 inf 7.53738
+L: 5 N: 591361 n: 2304 error l2 0.000104183 inf 7.46819
+L: 5 Buffered error n: 8100 l2 0.000166927 inf 7.54775
+L: 5 N: 591361 n: 2304 error l2 0.000236358 inf 5.71962
+L: 5 Buffered error n: 8100 l2 0.000436557 inf 8.39785
+L: 5 N: 591361 n: 2304 error l2 3.20647e-05 inf 0.739983
+L: 5 Buffered error n: 8100 l2 7.45911e-05 inf 0.970566
+L: 4 N: 148225 n: 2304 error l2 0.000578608 inf 7.78291
+L: 4 Buffered error n: 8100 l2 0.00111647 inf 8.35649
+L: 3 N: 37249 n: 2304 error l2 0.00320836 inf 8.53132
+L: 3 Buffered error n: 8100 l2 0.00460364 inf 8.58301
+L: 5 N: 591361 n: 2304 error l2 0.000100781 inf 7.48028
+L: 5 Buffered error n: 8100 l2 0.000207051 inf 8.24171
+L: 5 N: 591361 n: 2304 error l2 9.25072e-06 inf 0.259172
+L: 5 Buffered error n: 8100 l2 3.23771e-05 inf 0.580377
+L: 5 N: 591361 n: 2304 error l2 7.23065e-05 inf 2.64734
+L: 5 Buffered error n: 8100 l2 0.000188771 inf 7.60161
+L: 5 N: 591361 n: 2304 error l2 1.41354e-05 inf 0.386194
+L: 5 Buffered error n: 8100 l2 4.51188e-05 inf 0.721595
+L: 4 N: 148225 n: 2304 error l2 0.000217304 inf 7.81297
+L: 4 Buffered error n: 8100 l2 0.000577205 inf 7.81297
+L: 5 N: 591361 n: 2304 error l2 5.75374e-06 inf 0.165438
+L: 5 Buffered error n: 8100 l2 2.12493e-05 inf 0.413629
+L: 5 N: 591361 n: 2304 error l2 2.09643e-06 inf 0.0660445
+L: 5 Buffered error n: 7200 l2 8.35793e-06 inf 0.215082
+L: 5 N: 591361 n: 2304 error l2 8.29012e-06 inf 0.229532
+L: 5 Buffered error n: 8100 l2 2.95069e-05 inf 0.514273
+L: 5 N: 591361 n: 2304 error l2 2.93766e-06 inf 0.0887002
+L: 5 Buffered error n: 7200 l2 1.15912e-05 inf 0.267416
+L: 4 N: 148225 n: 2304 error l2 3.35657e-05 inf 0.380509
+L: 4 Buffered error n: 7200 l2 9.46332e-05 inf 0.514273
+L: 5 N: 591361 n: 2304 error l2 3.23525e-05 inf 0.725777
+L: 5 Buffered error n: 8100 l2 7.19931e-05 inf 0.896872
+L: 5 N: 591361 n: 2304 error l2 1.70619e-05 inf 0.444134
+L: 5 Buffered error n: 8100 l2 5.10929e-05 inf 0.740951
+L: 5 N: 591361 n: 2304 error l2 3.13271e-05 inf 0.726187
+L: 5 Buffered error n: 8100 l2 6.94803e-05 inf 0.896868
+L: 5 N: 591361 n: 2304 error l2 1.61144e-05 inf 0.435146
+L: 5 Buffered error n: 8100 l2 4.92159e-05 inf 0.740947
+L: 4 N: 148225 n: 2304 error l2 0.000118226 inf 0.832847
+L: 4 Buffered error n: 8100 l2 0.000284945 inf 0.896872
+L: 5 N: 591361 n: 2304 error l2 9.54647e-06 inf 0.252618
+L: 5 Buffered error n: 8100 l2 3.33099e-05 inf 0.528068
+L: 5 N: 591361 n: 2304 error l2 3.32807e-06 inf 0.096295
+L: 5 Buffered error n: 7200 l2 1.30743e-05 inf 0.274588
+L: 5 N: 591361 n: 2304 error l2 9.148e-06 inf 0.249316
+L: 5 Buffered error n: 8100 l2 3.21189e-05 inf 0.528065
+L: 5 N: 591361 n: 2304 error l2 3.20485e-06 inf 0.0952286
+L: 5 Buffered error n: 7200 l2 1.26113e-05 inf 0.274587
+L: 4 N: 148225 n: 2304 error l2 4.31629e-05 inf 0.438735
+L: 4 Buffered error n: 7200 l2 0.000118836 inf 0.528067
+L: 3 N: 37249 n: 2304 error l2 0.000411889 inf 4.10916
+L: 3 Buffered error n: 7200 l2 0.00110387 inf 7.63333
+L: 2 N: 9409 n: 2352 error l2 0.00622367 inf 8.36493
+L: 2 Buffered error n: 6400 l2 0.00745814 inf 8.36493
+L: 5 N: 591361 n: 2352 error l2 2.79968e-06 inf 0.0795144
+L: 5 Buffered error n: 7200 l2 1.13331e-05 inf 0.262765
+L: 5 N: 591361 n: 2304 error l2 7.26344e-06 inf 0.204643
+L: 5 Buffered error n: 8100 l2 2.6459e-05 inf 0.505329
+L: 5 N: 591361 n: 2352 error l2 3.1149e-06 inf 0.0863938
+L: 5 Buffered error n: 7200 l2 1.25784e-05 inf 0.274588
+L: 5 N: 591361 n: 2304 error l2 8.17515e-06 inf 0.224745
+L: 5 Buffered error n: 8100 l2 2.93835e-05 inf 0.528066
+L: 4 N: 148225 n: 2352 error l2 3.52337e-05 inf 0.431009
+L: 4 Buffered error n: 7200 l2 0.000108258 inf 0.528062
+L: 5 N: 591361 n: 2304 error l2 0.000119203 inf 6.30081
+L: 5 Buffered error n: 8100 l2 0.00025387 inf 6.74062
+L: 5 N: 591361 n: 2304 error l2 0.000279937 inf 6.6993
+L: 5 Buffered error n: 8100 l2 0.000484397 inf 7.47368
+L: 5 N: 591361 n: 2304 error l2 8.87825e-05 inf 7.49549
+L: 5 Buffered error n: 8100 l2 0.000193754 inf 7.78669
+L: 5 N: 591361 n: 2304 error l2 0.000177984 inf 7.41098
+L: 5 Buffered error n: 8100 l2 0.000359569 inf 8.15345
+L: 4 N: 148225 n: 2304 error l2 0.000716984 inf 7.52855
+L: 4 Buffered error n: 8100 l2 0.00146699 inf 7.82141
+L: 5 N: 591361 n: 2352 error l2 3.13956e-06 inf 0.0867314
+L: 5 Buffered error n: 7200 l2 1.26804e-05 inf 0.274588
+L: 5 N: 591361 n: 2304 error l2 8.24926e-06 inf 0.225721
+L: 5 Buffered error n: 8100 l2 2.96239e-05 inf 0.528067
+L: 5 N: 591361 n: 2352 error l2 2.76138e-06 inf 0.0802892
+L: 5 Buffered error n: 7200 l2 1.11974e-05 inf 0.266508
+L: 5 N: 591361 n: 2304 error l2 7.1611e-06 inf 0.206882
+L: 5 Buffered error n: 8100 l2 2.61394e-05 inf 0.512527
+L: 4 N: 148225 n: 2352 error l2 3.53612e-05 inf 0.439129
+L: 4 Buffered error n: 7200 l2 0.000107432 inf 0.528067
+L: 5 N: 591361 n: 2304 error l2 0.000166301 inf 6.54094
+L: 5 Buffered error n: 8100 l2 0.000294022 inf 8.50624
+L: 5 N: 591361 n: 2304 error l2 0.00035073 inf 9.21213
+L: 5 Buffered error n: 8100 l2 0.000606839 inf 9.21213
+L: 5 N: 591361 n: 2304 error l2 0.000200749 inf 7.11791
+L: 5 Buffered error n: 8100 l2 0.000381165 inf 8.67018
+L: 5 N: 591361 n: 2304 error l2 0.000193232 inf 6.08055
+L: 5 Buffered error n: 8100 l2 0.000356615 inf 8.205
+L: 4 N: 148225 n: 2304 error l2 0.000957742 inf 9.16746
+L: 4 Buffered error n: 8100 l2 0.0015865 inf 9.27356
+L: 3 N: 37249 n: 2352 error l2 0.00248692 inf 9.20185
+L: 3 Buffered error n: 7200 l2 0.00361148 inf 9.20185
+L: 5 N: 591361 n: 2304 error l2 0.000254089 inf 8.04399
+L: 5 Buffered error n: 8100 l2 0.000458487 inf 8.04399
+L: 5 N: 591361 n: 2304 error l2 0.000172218 inf 6.21016
+L: 5 Buffered error n: 8100 l2 0.000356071 inf 9.26362
+L: 5 N: 591361 n: 2304 error l2 0.000258613 inf 7.37402
+L: 5 Buffered error n: 8100 l2 0.000463922 inf 8.04059
+L: 5 N: 591361 n: 2304 error l2 0.000142491 inf 7.41578
+L: 5 Buffered error n: 8100 l2 0.000290611 inf 7.62865
+L: 4 N: 148225 n: 2304 error l2 0.000869531 inf 8.91553
+L: 4 Buffered error n: 8100 l2 0.00156978 inf 8.91553
+L: 5 N: 591361 n: 2304 error l2 0.000268776 inf 6.55207
+L: 5 Buffered error n: 8100 l2 0.000509064 inf 6.9945
+L: 5 N: 591361 n: 2304 error l2 0.000347344 inf 6.88304
+L: 5 Buffered error n: 8100 l2 0.00064618 inf 7.47061
+L: 5 N: 591361 n: 2304 error l2 0.000287521 inf 6.52693
+L: 5 Buffered error n: 8100 l2 0.000495642 inf 7.11705
+L: 5 N: 591361 n: 2304 error l2 0.00030132 inf 6.08945
+L: 5 Buffered error n: 8100 l2 0.000565084 inf 6.16798
+L: 4 N: 148225 n: 2304 error l2 0.00120296 inf 7.11858
+L: 4 Buffered error n: 8100 l2 0.00218971 inf 7.11858
+L: 5 N: 591361 n: 2304 error l2 0.000164517 inf 5.47714
+L: 5 Buffered error n: 8100 l2 0.000332964 inf 8.91038
+L: 5 N: 591361 n: 2304 error l2 0.000117067 inf 6.92509
+L: 5 Buffered error n: 8100 l2 0.000219414 inf 6.92509
+L: 5 N: 591361 n: 2304 error l2 0.000273784 inf 6.79179
+L: 5 Buffered error n: 8100 l2 0.000466151 inf 8.67685
+L: 5 N: 591361 n: 2304 error l2 0.000141438 inf 7.54288
+L: 5 Buffered error n: 8100 l2 0.000218808 inf 7.54288
+L: 4 N: 148225 n: 2304 error l2 0.000722707 inf 7.53167
+L: 4 Buffered error n: 8100 l2 0.0012241 inf 8.9172
+L: 5 N: 591361 n: 2304 error l2 0.000210057 inf 7.8341
+L: 5 Buffered error n: 8100 l2 0.000399048 inf 7.9301
+L: 5 N: 591361 n: 2304 error l2 0.000261077 inf 6.74433
+L: 5 Buffered error n: 8100 l2 0.000500821 inf 7.31457
+L: 5 N: 591361 n: 2304 error l2 0.000200051 inf 8.47908
+L: 5 Buffered error n: 8100 l2 0.000369206 inf 9.47375
+L: 5 N: 591361 n: 2304 error l2 0.000266783 inf 7.53393
+L: 5 Buffered error n: 8100 l2 0.000449442 inf 7.6895
+L: 4 N: 148225 n: 2304 error l2 0.000950392 inf 8.28286
+L: 4 Buffered error n: 8100 l2 0.00172545 inf 8.28286
+L: 3 N: 37249 n: 2304 error l2 0.00371222 inf 8.24889
+L: 3 Buffered error n: 8100 l2 0.00698127 inf 8.84328
+L: 5 N: 591361 n: 2352 error l2 2.55572e-06 inf 0.0737568
+L: 5 Buffered error n: 7200 l2 1.0381e-05 inf 0.246271
+L: 5 N: 591361 n: 2304 error l2 0.000184409 inf 7.99659
+L: 5 Buffered error n: 8100 l2 0.000295058 inf 8.68991
+L: 5 N: 591361 n: 2352 error l2 0.000240874 inf 7.61165
+L: 5 Buffered error n: 7200 l2 0.000394356 inf 8.36345
+L: 5 N: 591361 n: 2304 error l2 0.000235551 inf 7.69343
+L: 5 Buffered error n: 8100 l2 0.000512795 inf 8.2285
+L: 4 N: 148225 n: 2352 error l2 0.000778506 inf 8.54768
+L: 4 Buffered error n: 7200 l2 0.00121781 inf 8.54768
+L: 5 N: 591361 n: 2304 error l2 0.000304553 inf 6.79251
+L: 5 Buffered error n: 8100 l2 0.000495435 inf 7.25325
+L: 5 N: 591361 n: 2304 error l2 0.000192004 inf 7.02714
+L: 5 Buffered error n: 8100 l2 0.000336521 inf 7.90835
+L: 5 N: 591361 n: 2304 error l2 0.000191998 inf 8.07307
+L: 5 Buffered error n: 8100 l2 0.000381835 inf 8.26177
+L: 5 N: 591361 n: 2304 error l2 1.13588e-05 inf 0.318319
+L: 5 Buffered error n: 8100 l2 3.82982e-05 inf 0.664539
+L: 4 N: 148225 n: 2304 error l2 0.000813414 inf 8.25125
+L: 4 Buffered error n: 8100 l2 0.00134072 inf 8.25125
+L: 5 N: 591361 n: 2352 error l2 0.000163732 inf 8.94389
+L: 5 Buffered error n: 7200 l2 0.000264041 inf 8.96787
+L: 5 N: 591361 n: 2304 error l2 0.000283865 inf 8.14495
+L: 5 Buffered error n: 8100 l2 0.000519221 inf 8.96266
+L: 5 N: 591361 n: 2352 error l2 8.32906e-05 inf 8.24962
+L: 5 Buffered error n: 6400 l2 0.000104037 inf 8.24962
+L: 5 N: 591361 n: 2304 error l2 0.000255686 inf 7.82273
+L: 5 Buffered error n: 7200 l2 0.000423291 inf 8.03746
+L: 4 N: 148225 n: 2352 error l2 0.0008414 inf 8.95073
+L: 4 Buffered error n: 6400 l2 0.00127985 inf 8.95073
+L: 5 N: 591361 n: 2304 error l2 0.000207069 inf 7.76576
+L: 5 Buffered error n: 8100 l2 0.000418404 inf 8.30928
+L: 5 N: 591361 n: 2304 error l2 6.90593e-06 inf 0.197376
+L: 5 Buffered error n: 8100 l2 2.51003e-05 inf 0.47361
+L: 5 N: 591361 n: 2304 error l2 0.000132589 inf 7.14771
+L: 5 Buffered error n: 7200 l2 0.000236131 inf 7.32947
+L: 5 N: 591361 n: 2304 error l2 2.48614e-06 inf 0.0776087
+L: 5 Buffered error n: 7200 l2 9.86686e-06 inf 0.246271
+L: 4 N: 148225 n: 2304 error l2 0.000436301 inf 7.75579
+L: 4 Buffered error n: 7200 l2 0.00108239 inf 8.33
+L: 3 N: 37249 n: 2352 error l2 0.00296948 inf 8.18095
+L: 3 Buffered error n: 6400 l2 0.00479836 inf 8.43335
+L: 5 N: 591361 n: 2304 error l2 0.000204948 inf 6.59252
+L: 5 Buffered error n: 8100 l2 0.000384629 inf 9.71159
+L: 5 N: 591361 n: 2304 error l2 6.28405e-05 inf 4.3963
+L: 5 Buffered error n: 8100 l2 0.000141289 inf 8.08733
+L: 5 N: 591361 n: 2304 error l2 9.25072e-06 inf 0.259172
+L: 5 Buffered error n: 8100 l2 3.23771e-05 inf 0.580377
+L: 5 N: 591361 n: 2304 error l2 1.41354e-05 inf 0.386194
+L: 5 Buffered error n: 8100 l2 4.51188e-05 inf 0.721595
+L: 4 N: 148225 n: 2304 error l2 0.000412959 inf 8.20552
+L: 4 Buffered error n: 8100 l2 0.000649535 inf 8.20552
+L: 5 N: 591361 n: 2304 error l2 3.2351e-05 inf 0.725777
+L: 5 Buffered error n: 8100 l2 7.19934e-05 inf 0.896872
+L: 5 N: 591361 n: 2304 error l2 3.13271e-05 inf 0.726187
+L: 5 Buffered error n: 8100 l2 6.94803e-05 inf 0.896868
+L: 5 N: 591361 n: 2304 error l2 1.70619e-05 inf 0.444134
+L: 5 Buffered error n: 8100 l2 5.10929e-05 inf 0.740951
+L: 5 N: 591361 n: 2304 error l2 1.61144e-05 inf 0.435146
+L: 5 Buffered error n: 8100 l2 4.92159e-05 inf 0.740947
+L: 4 N: 148225 n: 2304 error l2 0.000118225 inf 0.832847
+L: 4 Buffered error n: 8100 l2 0.000284945 inf 0.896872
+L: 5 N: 591361 n: 2304 error l2 5.75374e-06 inf 0.165438
+L: 5 Buffered error n: 8100 l2 2.12493e-05 inf 0.413629
+L: 5 N: 591361 n: 2304 error l2 8.29012e-06 inf 0.229532
+L: 5 Buffered error n: 8100 l2 2.95069e-05 inf 0.514273
+L: 5 N: 591361 n: 2304 error l2 2.09637e-06 inf 0.0660445
+L: 5 Buffered error n: 7200 l2 8.35793e-06 inf 0.215082
+L: 5 N: 591361 n: 2304 error l2 2.93757e-06 inf 0.0887002
+L: 5 Buffered error n: 7200 l2 1.15912e-05 inf 0.267416
+L: 4 N: 148225 n: 2304 error l2 3.35657e-05 inf 0.380509
+L: 4 Buffered error n: 7200 l2 9.46333e-05 inf 0.514273
+L: 5 N: 591361 n: 2304 error l2 9.54647e-06 inf 0.252618
+L: 5 Buffered error n: 8100 l2 3.33099e-05 inf 0.528068
+L: 5 N: 591361 n: 2304 error l2 9.148e-06 inf 0.249316
+L: 5 Buffered error n: 8100 l2 3.21189e-05 inf 0.528065
+L: 5 N: 591361 n: 2304 error l2 3.32797e-06 inf 0.096295
+L: 5 Buffered error n: 7200 l2 1.30743e-05 inf 0.274588
+L: 5 N: 591361 n: 2304 error l2 3.20475e-06 inf 0.0952286
+L: 5 Buffered error n: 7200 l2 1.26113e-05 inf 0.274587
+L: 4 N: 148225 n: 2304 error l2 4.31629e-05 inf 0.438735
+L: 4 Buffered error n: 7200 l2 0.000118836 inf 0.528067
+L: 3 N: 37249 n: 2304 error l2 0.000791719 inf 8.14319
+L: 3 Buffered error n: 7200 l2 0.0017363 inf 8.14319
+L: 2 N: 9409 n: 2352 error l2 0.0106541 inf 8.7146
+L: 2 Buffered error n: 6400 l2 0.0171879 inf 8.7146
+L: 5 N: 591361 n: 2304 error l2 0.000328448 inf 5.6589
+L: 5 Buffered error n: 8100 l2 0.000630175 inf 8.07651
+L: 5 N: 591361 n: 2304 error l2 0.00031927 inf 5.41224
+L: 5 Buffered error n: 8100 l2 0.000590421 inf 5.88637
+L: 5 N: 591361 n: 2304 error l2 0.000269133 inf 6.0909
+L: 5 Buffered error n: 8100 l2 0.000486721 inf 6.46913
+L: 5 N: 591361 n: 2304 error l2 0.000234853 inf 6.75162
+L: 5 Buffered error n: 8100 l2 0.000423507 inf 7.33228
+L: 4 N: 148225 n: 2304 error l2 0.00115041 inf 6.72617
+L: 4 Buffered error n: 8100 l2 0.00211177 inf 9.06765
+L: 5 N: 591361 n: 2304 error l2 0.000149084 inf 6.55525
+L: 5 Buffered error n: 8100 l2 0.000319482 inf 7.87609
+L: 5 N: 591361 n: 2304 error l2 3.15864e-05 inf 0.761102
+L: 5 Buffered error n: 8100 l2 7.04075e-05 inf 0.928779
+L: 5 N: 591361 n: 2304 error l2 8.9655e-05 inf 4.99868
+L: 5 Buffered error n: 8100 l2 0.000256918 inf 7.08699
+L: 5 N: 591361 n: 2304 error l2 3.34259e-05 inf 0.760594
+L: 5 Buffered error n: 8100 l2 7.79248e-05 inf 0.970568
+L: 4 N: 148225 n: 2304 error l2 0.00033774 inf 7.37995
+L: 4 Buffered error n: 8100 l2 0.000923725 inf 8.30351
+L: 5 N: 591361 n: 2304 error l2 6.04138e-05 inf 4.15597
+L: 5 Buffered error n: 8100 l2 0.000174561 inf 7.25401
+L: 5 N: 591361 n: 2304 error l2 0.000110877 inf 4.85892
+L: 5 Buffered error n: 8100 l2 0.000253242 inf 6.40666
+L: 5 N: 591361 n: 2304 error l2 3.15858e-05 inf 0.761102
+L: 5 Buffered error n: 8100 l2 7.04082e-05 inf 0.928779
+L: 5 N: 591361 n: 2304 error l2 3.34262e-05 inf 0.760591
+L: 5 Buffered error n: 8100 l2 7.7927e-05 inf 0.970568
+L: 4 N: 148225 n: 2304 error l2 0.000259535 inf 4.16787
+L: 4 Buffered error n: 8100 l2 0.000770026 inf 7.09881
+L: 5 N: 591361 n: 2304 error l2 2.83557e-05 inf 1.79724
+L: 5 Buffered error n: 8100 l2 0.000114446 inf 7.13324
+L: 5 N: 591361 n: 2304 error l2 0.000222141 inf 7.02451
+L: 5 Buffered error n: 8100 l2 0.000349621 inf 7.02698
+L: 5 N: 591361 n: 2304 error l2 0.000107447 inf 6.56744
+L: 5 Buffered error n: 8100 l2 0.000197228 inf 7.85955
+L: 5 N: 591361 n: 2304 error l2 0.00019475 inf 8.62568
+L: 5 Buffered error n: 8100 l2 0.000368373 inf 8.62568
+L: 4 N: 148225 n: 2304 error l2 0.00063205 inf 7.72743
+L: 4 Buffered error n: 8100 l2 0.000960904 inf 8.25407
+L: 3 N: 37249 n: 2304 error l2 0.002773 inf 9.07491
+L: 3 Buffered error n: 8100 l2 0.00540137 inf 9.07491
+L: 5 N: 591361 n: 2304 error l2 2.79814e-05 inf 0.761702
+L: 5 Buffered error n: 8100 l2 6.48722e-05 inf 0.858254
+L: 5 N: 591361 n: 2304 error l2 1.45406e-05 inf 0.385502
+L: 5 Buffered error n: 8100 l2 4.61342e-05 inf 0.709046
+L: 5 N: 591361 n: 2304 error l2 3.24085e-05 inf 0.718348
+L: 5 Buffered error n: 8100 l2 7.23671e-05 inf 0.89687
+L: 5 N: 591361 n: 2304 error l2 1.71965e-05 inf 0.444496
+L: 5 Buffered error n: 8100 l2 5.13945e-05 inf 0.740949
+L: 4 N: 148225 n: 2304 error l2 0.000114326 inf 0.83551
+L: 4 Buffered error n: 8100 l2 0.000279574 inf 0.896862
+L: 5 N: 591361 n: 2304 error l2 8.49473e-06 inf 0.229361
+L: 5 Buffered error n: 8100 l2 3.0164e-05 inf 0.505329
+L: 5 N: 591361 n: 2304 error l2 3.00388e-06 inf 0.0886591
+L: 5 Buffered error n: 7200 l2 1.1847e-05 inf 0.262765
+L: 5 N: 591361 n: 2304 error l2 9.60395e-06 inf 0.252897
+L: 5 Buffered error n: 8100 l2 3.35016e-05 inf 0.528066
+L: 5 N: 591361 n: 2304 error l2 3.34583e-06 inf 0.0964076
+L: 5 Buffered error n: 7200 l2 1.31474e-05 inf 0.274588
+L: 4 N: 148225 n: 2304 error l2 4.18132e-05 inf 0.440138
+L: 4 Buffered error n: 7200 l2 0.000116472 inf 0.528062
+L: 5 N: 591361 n: 2304 error l2 0.000131927 inf 8.85408
+L: 5 Buffered error n: 8100 l2 0.000249319 inf 8.85408
+L: 5 N: 591361 n: 2304 error l2 0.000210996 inf 6.52417
+L: 5 Buffered error n: 8100 l2 0.000370974 inf 8.1233
+L: 5 N: 591361 n: 2304 error l2 0.000325891 inf 6.93417
+L: 5 Buffered error n: 8100 l2 0.000588543 inf 8.11613
+L: 5 N: 591361 n: 2304 error l2 0.000254878 inf 8.1286
+L: 5 Buffered error n: 8100 l2 0.000464205 inf 8.1286
+L: 4 N: 148225 n: 2304 error l2 0.000974269 inf 8.17855
+L: 4 Buffered error n: 8100 l2 0.00168269 inf 8.17855
+L: 5 N: 591361 n: 2304 error l2 0.000207993 inf 8.00786
+L: 5 Buffered error n: 8100 l2 0.00033435 inf 8.17344
+L: 5 N: 591361 n: 2304 error l2 0.000242966 inf 9.05296
+L: 5 Buffered error n: 7200 l2 0.000406276 inf 9.05296
+L: 5 N: 591361 n: 2304 error l2 0.000187057 inf 7.16029
+L: 5 Buffered error n: 8100 l2 0.000376169 inf 8.91694
+L: 5 N: 591361 n: 2304 error l2 0.000109292 inf 4.9466
+L: 5 Buffered error n: 7200 l2 0.00026431 inf 8.05025
+L: 4 N: 148225 n: 2304 error l2 0.00074065 inf 8.31625
+L: 4 Buffered error n: 7200 l2 0.00134099 inf 8.45944
+L: 3 N: 37249 n: 2304 error l2 0.0025819 inf 8.43703
+L: 3 Buffered error n: 7200 l2 0.00336193 inf 8.43703
+L: 5 N: 591361 n: 2304 error l2 2.79814e-05 inf 0.761699
+L: 5 Buffered error n: 8100 l2 6.48721e-05 inf 0.858254
+L: 5 N: 591361 n: 2304 error l2 3.24073e-05 inf 0.718326
+L: 5 Buffered error n: 8100 l2 7.23674e-05 inf 0.89687
+L: 5 N: 591361 n: 2304 error l2 1.45406e-05 inf 0.385502
+L: 5 Buffered error n: 8100 l2 4.61342e-05 inf 0.709046
+L: 5 N: 591361 n: 2304 error l2 1.71965e-05 inf 0.444496
+L: 5 Buffered error n: 8100 l2 5.13945e-05 inf 0.740949
+L: 4 N: 148225 n: 2304 error l2 0.000114326 inf 0.83551
+L: 4 Buffered error n: 8100 l2 0.000279574 inf 0.896862
+L: 5 N: 591361 n: 2304 error l2 0.000162338 inf 7.29337
+L: 5 Buffered error n: 8100 l2 0.000240236 inf 7.51613
+L: 5 N: 591361 n: 2304 error l2 0.000184717 inf 7.76978
+L: 5 Buffered error n: 8100 l2 0.000309579 inf 8.13936
+L: 5 N: 591361 n: 2304 error l2 0.000220018 inf 5.98326
+L: 5 Buffered error n: 8100 l2 0.000397215 inf 7.18957
+L: 5 N: 591361 n: 2304 error l2 0.00011045 inf 7.4635
+L: 5 Buffered error n: 8100 l2 0.000232116 inf 7.48646
+L: 4 N: 148225 n: 2304 error l2 0.000701755 inf 8.07175
+L: 4 Buffered error n: 8100 l2 0.00119475 inf 8.31656
+L: 5 N: 591361 n: 2304 error l2 8.49473e-06 inf 0.229361
+L: 5 Buffered error n: 8100 l2 3.0164e-05 inf 0.505329
+L: 5 N: 591361 n: 2304 error l2 0.000197966 inf 8.40482
+L: 5 Buffered error n: 8100 l2 0.000301363 inf 8.45653
+L: 5 N: 591361 n: 2304 error l2 3.00379e-06 inf 0.0886591
+L: 5 Buffered error n: 7200 l2 1.1847e-05 inf 0.262765
+L: 5 N: 591361 n: 2304 error l2 3.34571e-06 inf 0.0964063
+L: 5 Buffered error n: 7200 l2 1.31474e-05 inf 0.274588
+L: 4 N: 148225 n: 2304 error l2 0.000410095 inf 8.39136
+L: 4 Buffered error n: 7200 l2 0.000485725 inf 8.39136
+L: 5 N: 591361 n: 2304 error l2 0.000390483 inf 6.47364
+L: 5 Buffered error n: 8100 l2 0.000705151 inf 8.23928
+L: 5 N: 591361 n: 2304 error l2 0.000259413 inf 5.85675
+L: 5 Buffered error n: 8100 l2 0.000500038 inf 7.31202
+L: 5 N: 591361 n: 2304 error l2 0.000170005 inf 5.81965
+L: 5 Buffered error n: 7200 l2 0.000316386 inf 7.64375
+L: 5 N: 591361 n: 2304 error l2 0.000199291 inf 7.92725
+L: 5 Buffered error n: 7200 l2 0.000370178 inf 8.48587
+L: 4 N: 148225 n: 2304 error l2 0.00105072 inf 7.93561
+L: 4 Buffered error n: 7200 l2 0.00181925 inf 8.52074
+L: 3 N: 37249 n: 2304 error l2 0.00276175 inf 8.0831
+L: 3 Buffered error n: 7200 l2 0.00369045 inf 8.35304
+L: 5 N: 591361 n: 2304 error l2 9.73803e-05 inf 7.42773
+L: 5 Buffered error n: 8100 l2 0.000135434 inf 7.78137
+L: 5 N: 591361 n: 2304 error l2 7.03242e-05 inf 4.86992
+L: 5 Buffered error n: 8100 l2 0.000185866 inf 8.11379
+L: 5 N: 591361 n: 2304 error l2 1.28394e-05 inf 0.344455
+L: 5 Buffered error n: 8100 l2 4.21745e-05 inf 0.664539
+L: 5 N: 591361 n: 2304 error l2 8.71011e-06 inf 0.24605
+L: 5 Buffered error n: 8100 l2 3.07974e-05 inf 0.549009
+L: 4 N: 148225 n: 2304 error l2 0.000241585 inf 7.52923
+L: 4 Buffered error n: 8100 l2 0.000566684 inf 8.03824
+L: 5 N: 591361 n: 2304 error l2 0.000220267 inf 8.95948
+L: 5 Buffered error n: 8100 l2 0.000398766 inf 8.95948
+L: 5 N: 591361 n: 2304 error l2 0.000103691 inf 8.16486
+L: 5 Buffered error n: 7200 l2 0.000192196 inf 8.3754
+L: 5 N: 591361 n: 2304 error l2 9.25577e-05 inf 5.66052
+L: 5 Buffered error n: 8100 l2 0.000116502 inf 7.57004
+L: 5 N: 591361 n: 2304 error l2 5.50519e-05 inf 3.66256
+L: 5 Buffered error n: 7200 l2 0.000141067 inf 7.75014
+L: 4 N: 148225 n: 2304 error l2 0.000491217 inf 8.94599
+L: 4 Buffered error n: 7200 l2 0.000815562 inf 8.94599
+L: 5 N: 591361 n: 2304 error l2 5.68638e-05 inf 3.38069
+L: 5 Buffered error n: 8100 l2 0.000137386 inf 8.00198
+L: 5 N: 591361 n: 2304 error l2 5.44052e-06 inf 0.157909
+L: 5 Buffered error n: 8100 l2 2.02179e-05 inf 0.391272
+L: 5 N: 591361 n: 2304 error l2 2.74188e-06 inf 0.0821858
+L: 5 Buffered error n: 7200 l2 1.08523e-05 inf 0.246271
+L: 5 N: 591361 n: 2304 error l2 1.98722e-06 inf 0.0632381
+L: 5 Buffered error n: 7200 l2 7.95239e-06 inf 0.203457
+L: 4 N: 148225 n: 2304 error l2 9.20185e-05 inf 2.99135
+L: 4 Buffered error n: 7200 l2 0.000296007 inf 8.04285
+L: 5 N: 591361 n: 2304 error l2 3.48066e-06 inf 0.10436
+L: 5 Buffered error n: 8100 l2 1.32927e-05 inf 0.278856
+L: 5 N: 591361 n: 2304 error l2 1.29218e-06 inf 0.0426527
+L: 5 Buffered error n: 7200 l2 5.23062e-06 inf 0.145001
+L: 5 N: 591361 n: 2304 error l2 1.29214e-06 inf 0.0426527
+L: 5 Buffered error n: 7200 l2 5.23062e-06 inf 0.145001
+L: 5 N: 591361 n: 2304 error l2 4.84827e-07 inf 0.0177646
+L: 5 Buffered error n: 6400 l2 2.04995e-06 inf 0.0753989
+L: 4 N: 148225 n: 2304 error l2 1.27185e-05 inf 0.182201
+L: 4 Buffered error n: 6400 l2 3.66183e-05 inf 0.278856
+L: 3 N: 37249 n: 2304 error l2 0.00111949 inf 8.35571
+L: 3 Buffered error n: 6400 l2 0.0025767 inf 8.55137
+L: 2 N: 9409 n: 2304 error l2 0.00997838 inf 8.7534
+L: 2 Buffered error n: 6400 l2 0.0158344 inf 8.7534
+L: 1 N: 2401 n: 2401 error l2 0.0322445 inf 8.53312
+L: 1 Buffered error n: 4900 l2 0.0459685 inf 8.53312
+N: 625 error l2 0.0667237 inf 8.53312

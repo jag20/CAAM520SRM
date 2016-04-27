@@ -1,16 +1,15 @@
 #! /usr/bin/env python
-import pickle
 import numpy as np
 import scipy, math
 import matplotlib.pyplot as plt
 from pylab import legend, plot, loglog, show, title, xlabel, ylabel, figure
 
-k = 6  # how many levels to use
+k = 3  # how many levels to use
 mms = 2 # which mms
 refine_rat = 2 # refinement ratio
-x_size = 25
-y_size = 25
-
+x_size = 128
+y_size = 128
+buffSizes = [0,2,4,8,16]
 # goes up the patches in the output and parses to Ns and errors
 def parseErrors(levels,out):
     Ns = []
@@ -26,7 +25,6 @@ def parseErrors(levels,out):
         Ns.append(N)
     return (np.array(Ns),np.array(errors))
 
-buffSizes = [0, 1, 2]
 
 for buffsize in buffSizes:
     # same file name as in gen_patch_data.py
@@ -39,7 +37,6 @@ for buffsize in buffSizes:
     figure(2)
     loglog(Ns, errors)
     # estimate slope
-    loglog(Ns, 1000*Ns**-1.5)
     slope = (math.log(errors[-1]) - math.log(errors[-2]))/(math.log(Ns[-1]) - math.log(Ns[-2]))
     print 'buffer:',buffsize,'slope:',slope
     
@@ -47,7 +44,7 @@ for buffsize in buffSizes:
 
 
 
-
+loglog(Ns, 1000*Ns**-1.5)
 figure(2)
 title('Patch Convergence for Varying Buffer Sizes')
 xlabel('log N')
