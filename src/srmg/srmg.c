@@ -323,9 +323,9 @@ static PetscErrorCode SNESSRMGCreatePatch_Static(DM dm, PetscInt quadrant, Petsc
   ierr = DMSetUp(*patch);CHKERRQ(ierr);
   /* Create interpolator from coarse global vector to patch local (interior+buffer) vector */
   switch (interpOrder) {
-  case 1:
-    ierr = SNESSRMGCreateInterpolator_Quadratic_Static(Xs, Ys, Zs, Xm, Ym, Zm, pXs, pYs, pZs, pXm, pYm, pZm, r, dof, interp);CHKERRQ(ierr);break;
   case 2:
+    ierr = SNESSRMGCreateInterpolator_Quadratic_Static(Xs, Ys, Zs, Xm, Ym, Zm, pXs, pYs, pZs, pXm, pYm, pZm, r, dof, interp);CHKERRQ(ierr);break;
+  case 1:
     ierr = SNESSRMGCreateInterpolator_Linear_Static(Xs, Ys, Zs, Xm, Ym, Zm, pXs, pYs, pZs, pXm, pYm, pZm, r, dof, interp);CHKERRQ(ierr);break;
   default:
     SETERRQ1(comm, PETSC_ERR_ARG_OUTOFRANGE, "Interpolation order %D not supported", interpOrder);
