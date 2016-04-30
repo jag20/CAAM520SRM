@@ -26,23 +26,54 @@ typedef struct {
 
 #undef __FUNCT__
 #define __FUNCT__ "SNESSRMGGetBounds_Static"
+/*
+  SNESSRMGGetBounds_Static - We divide a dimension in half and return a patch covering that half with the specified buffer. The mask tells us whether to return the left or right half.
+
+  Not collective
+
+  Input Parameters:
++ quadrant - The quadrant number, in 3D its [0, 8)
+. buffer   - The buffer size around the patch
+. S        - The start of the parent
+. s        - The start of the interior of the parent, if S == s then there is no buffer around the parent on the left side
+. M        - The size of the parent
+. m        - The size of the parent interior, if S+M == s+m then there is no buffer around the parent on the right side
+. cs       - The coordinate of the left side of the parent (vertex S)
+- ce       - The coordinate of the right side of the parent (vertex S+M)
+
+  Output Parameters
++ pS       - The start of the patch
+. ps       - The start of the patch interior, if pS == ps then there is no buffer around the patch on the left side
+. pM       - The size of the patch
+. pm       - The size of the patch interior, if pS+pM == ps+pm then there is no buffer around the patch on the right side
+. pcs      - The coordinate of the left side of the patch (vertex pS)
+- pce      - The coordinate of the right side of the patch (vertex pS+pM)
+
+  Level: developer
+
+.seealso: SNESSRMGCreatePatch_Static()
+*/
 PetscErrorCode SNESSRMGGetBounds_Static(PetscInt quadrant, PetscInt buffer, PetscInt mask, PetscInt S, PetscInt s, PetscInt *pS, PetscInt *ps, PetscInt M, PetscInt m, PetscInt *pM, PetscInt *pm, PetscReal cs, PetscReal *pcs, PetscReal ce, PetscReal *pce)
 {
+  const PetscReal h = M <= 1 ? 1.0 : (ce-cs)/(M-1);
+
   PetscFunctionBegin;
   if (quadrant & mask) {
     *ps  = s + (m-1)/2;
     *pS  = PetscMax(*ps - buffer, S);
     *pm  = m - (m-1)/2;
     *pM  = (*ps-*pS) + PetscMin(*pm + buffer, S+M - *ps);
-    *pcs = cs + (M > 1 ? (*pS - S)*(ce-cs)/(M-1) : 0.0);
-    *pce = ce;
+    /* The coordinates are for the buffered parent region, and the buffer may be different from the child buffer */
+    *pcs = cs + (M > 1 ? (*pS - S)*h : 0.0);
+    *pce = ce - PetscMax(0, (S+M) - (s+m) - buffer) * h;
   } else {
     *ps  = s;
     *pS  = PetscMax(s - buffer, S);
     *pm  = (m+1)/2;
     *pM  = (*ps-*pS) + PetscMin(*pm + buffer, S+M - *ps);
-    *pcs = cs;
-    *pce = cs + (m > 1 ? ((*pM)-1)*(ce-cs)/(M-1) : ce);
+    /* The coordinates are for the buffered parent region, and the buffer may be different from the child buffer */
+    *pcs = cs + PetscMax(0, s - S - buffer) * h;
+    *pce = (m > 1 ? *pcs + ((*pM)-1)*h : ce);
   }
   PetscFunctionReturn(0);
 }
@@ -400,6 +431,7 @@ PetscErrorCode SNESSRMGProcessLevel_Static(SNES snes, DM dmCoarse, Vec solCoarse
   }
   ierr = DMGetDimension(dmCoarse, &dim);CHKERRQ(ierr);
   for (d = 0; d < dim; ++d) numQuadrants *= 2;
+  ierr = PetscPrintf(PETSC_COMM_SELF, "L: %D Buffer %D\n", sr->numLevels - remainingLevels + 1, buffer);CHKERRQ(ierr);
   for (q = 0; q < numQuadrants; ++q) {
     DM  dmPatch;
     Mat interp;
