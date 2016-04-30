@@ -200,7 +200,7 @@ static PetscErrorCode SNESSRMGCreateInterpolator_Quadratic_Static(PetscInt Xs, P
             dnz[g[0]]++; dnz[g[1]]++;
             if (pXm > 2){
               g[2] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+2 -  Xs);
-              if ( i == pXs + pXm - 2){
+              if (i == pXs + pXm - 2) {
                 g[2] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r-1 -  Xs);
                 g[1] = g[0];
                 g[0] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
@@ -214,7 +214,7 @@ static PetscErrorCode SNESSRMGCreateInterpolator_Quadratic_Static(PetscInt Xs, P
             dnz[g[0]]++; dnz[g[1]]++;
             if (pYm > 2){
               g[2] = ((k/r -  Zs)*Ym  + (j/r+2 -  Ys))*Xm  + (i/r -  Xs);
-              if ( i == pYs + pYm - 2){
+              if (j == pYs + pYm - 2) {
                 g[2] = ((k/r -  Zs)*Ym  + (j/r-1 -  Ys))*Xm  + (i/r -  Xs);
                 g[1] = g[0];
                 g[0] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
@@ -252,7 +252,7 @@ static PetscErrorCode SNESSRMGCreateInterpolator_Quadratic_Static(PetscInt Xs, P
             v[0] = 0.5; v[1] = 0.5;
             if (pXm > 2){
               g[2] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+2 -  Xs);
-              if ( i == pXs + pXm - 2){
+              if (i == pXs + pXm - 2) {
                 g[2] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r-1 -  Xs);
                 g[1] = g[0];
                 g[0] = ((k/r -  Zs)*Ym  + (j/r -  Ys))*Xm  + (i/r+1 -  Xs);
@@ -269,15 +269,15 @@ static PetscErrorCode SNESSRMGCreateInterpolator_Quadratic_Static(PetscInt Xs, P
             v[0] = 0.5; v[1] = 0.5;
             if (pYm > 2){
               g[2] = ((k/r -  Zs)*Ym  + (j/r+2 -  Ys))*Xm  + (i/r -  Xs);
-              if ( i == pYs + pYm - 2){
+              if (j == pYs + pYm - 2) {
                 g[2] = ((k/r -  Zs)*Ym  + (j/r-1 -  Ys))*Xm  + (i/r -  Xs);
                 g[1] = g[0];
                 g[0] = ((k/r -  Zs)*Ym  + (j/r+1 -  Ys))*Xm  + (i/r -  Xs);
               }
               v[0] = .375; v[1] = 0.75; v[2] = -.125;
               ierr = MatSetValues(in, 3, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
-            } else{
-            ierr = MatSetValues(in, 2, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
+            } else {
+              ierr = MatSetValues(in, 2, g, 1, &lo, v, INSERT_VALUES);CHKERRQ(ierr);
             }
           } else {
             v[0] = 1.0;
