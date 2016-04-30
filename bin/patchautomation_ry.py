@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/python
 import os, sys
 sys.path.insert(0, os.path.join(os.environ['PETSC_DIR'], 'config'))
 sys.path.insert(0, os.path.join(os.environ['PETSC_DIR'], 'config', 'BuildSystem'))
@@ -38,7 +38,7 @@ errors = []
 
 k = 6
 
-options = ['-snes_type', 'srmg', '-dll_prepend', '$SRMG_DIR/$PETSC_ARCH/lib/libsrmg.'+sharedExt, '-MMS', '2', '-snes_srmg_levels', str(k) ,'-buffer_size', '0', '-snes_srmg_refinement_ratio', '2']
+options = ['-snes_type', 'srmg', '-dll_prepend', '$SRMG_DIR/$PETSC_ARCH/lib/libsrmg.'+sharedExt, '-MMS', '2', '-snes_srmg_levels', str(k) ,'-buffer_size', '0', '-snes_srmg_refinement_ratio', '2', '-snes_srmg_interp_order', '2' ]
 #options = ['-snes_type', 'srmg', '-dll_prepend', '$SRMG_DIR/$PETSC_ARCH/lib/libsrmg.'+sharedExt, '-MMS', '2', '-snes_srmg_levels', str(k),'-buffer_size', '1', '-da_grid_x 7', '-da_grid_y 7']
 
 cmd = '$PETSC_DIR/src/snes/examples/tutorials/ex5 '+' '.join(options)

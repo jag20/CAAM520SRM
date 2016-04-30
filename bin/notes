@@ -1,0 +1,3 @@
+no work: set quadratic interp with -snes_srmg_interp_order 2
+when srmg_levels /= 0: symbol lookup error: /home/jag20/Git/CAAM520SRM/arch-linux2-c-debug/lib/libsrmg.so: undefined symbol: DMDAGetDof
+
